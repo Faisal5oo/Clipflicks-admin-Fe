@@ -27,6 +27,7 @@ const VideosPage = () => {
     fetchVideos();
   }, []);
 
+
   // Function to download video
   const downloadVideo = (url) => {
     const link = document.createElement("a");
@@ -41,6 +42,8 @@ const VideosPage = () => {
   const deleteVideo = (id) => {
     setVideos(videos.filter((video) => video.id !== id));
   };
+
+  console.log("videos ")
 
   return (
     <Layout>
@@ -118,7 +121,7 @@ const VideosPage = () => {
                         <Trash2 size={20} />
                       </button>
                       <button
-                        onClick={() => downloadVideo(video.videoURL)}
+                        onClick={() => downloadVideo(video.rawvideo)}
                         className="text-green-500 hover:text-green-700"
                       >
                         <Download size={20} />

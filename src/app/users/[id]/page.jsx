@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import axios from "axios";
-import Layout from "@/components/LayoutWrapper";
+import Layout from "../../../components/LayoutWrapper";
 
 const API_URL = "http://localhost:5000/api/users"; // Replace with actual API
 const TOKEN = "your_token_here"; // Replace with your actual token
@@ -68,7 +68,7 @@ const EmployeeDetail = () => {
         </p>
 
         {/* Referral Link */}
-        <div className="mt-4 p-4 bg-gray-100 rounded-lg flex items-center justify-between">
+        <div className="mt-4 p-4 bg-gray-100 rounded-lg flex items-center justify-between text-black">
           <p className="text-gray-700 font-medium">Referral Link:</p>
           <div className="flex items-center gap-2">
             <input

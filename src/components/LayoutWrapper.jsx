@@ -59,10 +59,10 @@ const Layout = ({ children }) => {
           <Link href="/">
             {open && (
               <Image
-                src={"/clipsflick.jpg"}
+                src={"/cf-logo.jpg"}
                 alt="logo"
-                width={100}
-                height={100}
+                width={150}
+                height={150}
               />
             )}
           </Link>
@@ -86,7 +86,7 @@ const Layout = ({ children }) => {
         <div className="mt-auto">
           <button
             onClick={() => {
-              localStorage.removeItem("token"); // Remove the token
+              document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"; // Remove the token
               router.push("/login"); // Redirect to login page
             }}
             className="flex items-center gap-4 p-3 text-red-500 w-full hover:bg-red-900 transition"

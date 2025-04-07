@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import axios from "axios";
+import { setCookie } from 'cookies-next';
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -24,7 +25,7 @@ export default function AdminLogin() {
       });
 
       if (response.data.token) {
-        localStorage.setItem("token", response.data.token);
+        setCookie("token", response.data.token, { maxAge: 60 * 60 * 24 * 7, path: "/" }); // 1-week expiry
         router.push("/");
       }
     } catch (error) {

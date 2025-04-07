@@ -93,9 +93,9 @@ const Users = () => {
         <h1 className="text-3xl font-bold text-white mb-6">Employees</h1>
 
         {/* Add Employee Form */}
-        <form onSubmit={addEmployee} className="bg-white p-6 rounded-lg shadow-md mb-6">
+        <form onSubmit={addEmployee} className="bg-white text-black p-6 rounded-lg shadow-md mb-6">
           <h2 className="text-xl font-semibold mb-4">Add New Employee</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-black">
             <input
               type="text"
               name="name"
@@ -121,7 +121,7 @@ const Users = () => {
         </form>
 
         {/* Employee List */}
-        <div className="bg-white p-6 rounded-lg shadow-md overflow-x-auto">
+        <div className="bg-white p-6 rounded-lg shadow-md overflow-x-auto text-black">
           <h2 className="text-xl font-semibold mb-4">Employee List</h2>
 
           {loading ? (
@@ -162,7 +162,7 @@ const Users = () => {
 
         {/* Edit Modal */}
         {showEditModal && editEmployee && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center text-black">
             <div className="bg-white p-6 rounded-lg shadow-lg">
               <h2 className="text-xl font-semibold mb-4">Edit Employee</h2>
               <form onSubmit={updateEmployee} className="space-y-4">

@@ -28,6 +28,8 @@ const VideoDetails = () => {
     fetchVideoDetails();
   }, [id]);
 
+  console.log("video", video);
+
   if (loading)
     return (
       <Layout>
@@ -113,9 +115,11 @@ const VideoDetails = () => {
                 Open the Video link
               </a>
             </p>
+           
           </div>
         </div>
-
+        <h1 className="text-black font-bold my-4">Creator's Signature</h1>
+        <img src={video.signature} alt="" />
         {/* Additional Fields */}
         <div className="mt-8 p-4 bg-gray-100 rounded-lg">
           <h2 className="text-xl font-semibold text-gray-800 mb-2">

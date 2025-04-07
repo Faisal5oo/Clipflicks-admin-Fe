@@ -1,99 +1,77 @@
-"use client"
+"use client";
 import Layout from "@/components/LayoutWrapper";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { formatDate } from "@/utils/dateFormatter";
+
 
 const Notifications = () => {
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      message: "A new video was submitted by John Doe",
-      title: "React Tutorial",
-      creator: "Alice Smith",
-      email: "alice@example.com",
-      timestamp: "March 4, 2025, 10:30 AM",
-    },
-    {
-      id: 2,
-      message: "A new video was submitted by Sarah Khan",
-      title: "Next.js Guide",
-      creator: "Bob Johnson",
-      email: "bob@example.com",
-      timestamp: "March 4, 2025, 11:15 AM",
-    },
-  ]);
+  const [notifications, setNotifications] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const perPage = 10; // Show 10 notifications per page
 
-  // Function to remove a single notification
-  const removeNotification = (id) => {
-    setNotifications(notifications.filter((notification) => notification.id !== id));
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  // Fetch notifications using Axios
+  const fetchNotifications = async () => {
+    try {
+      const { data } = await axios.get("http://localhost:5000/api/notification/all");
+      setNotifications(data); // Store all notifications
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
   };
 
-  // Function to clear all notifications
-  const clearNotifications = () => {
-    setNotifications([]);
-  };
-
-  // Simulate a new notification (can be triggered on form submit)
-  const addNotification = () => {
-    const newNotification = {
-      id: Date.now(),
-      message: "A new video was submitted by Alex Brown",
-      title: "JavaScript Tips",
-      creator: "Chris Evans",
-      email: "chris@example.com",
-      timestamp: new Date().toLocaleString(),
-    };
-    setNotifications([newNotification, ...notifications]); // Add new notification at the top
-  };
+  // Pagination logic
+  const indexOfLastNotification = currentPage * perPage;
+  const indexOfFirstNotification = indexOfLastNotification - perPage;
+  const currentNotifications = notifications?.slice(indexOfFirstNotification, indexOfLastNotification);
+  const totalPages = Math.ceil(notifications?.length / perPage);
 
   return (
     <Layout>
-    <div className="mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-3xl font-bold">Notifications</h2>
-        {/* <button 
-          onClick={addNotification} 
-          className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-        >
-          Simulate Notification
-        </button> */}
-      </div>
-
-      {notifications.length === 0 ? (
-        <p className="text-gray-500 text-center">No new notifications</p>
-      ) : (
-        <div>
-          <ul>
-            {notifications.map((notification) => (
-              <li key={notification.id} className="border-b py-4 flex justify-between items-center">
-                <div>
-                  <p className="font-semibold">{notification.message}</p>
-                  <p>
-                    <strong>Title:</strong> {notification.title}
-                  </p>
-                  <p>
-                    <strong>Creator:</strong> {notification.creator} ({notification.email})
-                  </p>
-                  <p className="text-gray-500 text-sm">{notification.timestamp}</p>
-                </div>
-                <button
-                  onClick={() => removeNotification(notification.id)}
-                  className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600"
-                >
-                  Mark as Read
-                </button>
-              </li>
-            ))}
-          </ul>
-
-          <button
-            onClick={clearNotifications}
-            className="mt-4 w-full px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
-          >
-            Clear All
-          </button>
+      <div className="mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-3xl font-bold text-black">Notifications</h2>
         </div>
-      )}
-    </div></Layout>
+
+        {notifications?.length === 0 ? (
+          <p className="text-gray-500 text-center">No new notifications</p>
+        ) : (
+          <div>
+            <ul>
+              {currentNotifications?.map((notification) => (
+                <li key={notification.id} className="border-b py-4 text-black">
+                  <p className="font-semibold">{notification.message}</p>
+                  <p className="text-sm">{formatDate(notification.createdAt)}</p>
+                </li>
+              ))}
+            </ul>
+
+            {/* Pagination Controls */}
+            <div className="mt-4 flex justify-between items-center">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <span className="text-gray-700">Page {currentPage} of {totalPages}</span>
+              <button
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </Layout>
   );
 };
 
