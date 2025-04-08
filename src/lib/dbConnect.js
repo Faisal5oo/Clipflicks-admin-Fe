@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const MONGODB_URI = "mongodb://localhost:27017/clipflicks";
+const MONGODB_URI = "mongodb+srv://Faisalharoon2001:faisal16@cluster0.lcbopcq.mongodb.net/clipflicks?retryWrites=true&w=majority&appName=Cluster0s";
 
 if (!MONGODB_URI) {
   throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
@@ -19,6 +19,7 @@ async function dbConnect() {
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => mongoose);
   }
   cached.conn = await cached.promise;
+
   return cached.conn;
 }
 
