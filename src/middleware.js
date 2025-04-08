@@ -20,11 +20,19 @@ export function middleware(request) {
         return NextResponse.redirect(new URL('/', request.url));
     }
 
-    // Define protected paths
-    const protectedPaths = ['/dashboard', '/users', '/videos', '/settings', '/notifications'];
+    // Define manually protected routes
+    const protectedPaths = [
+        '/', 
+        '/users', 
+        '/videos', 
+        '/users/:id*', 
+        '/videos/:id*'  ,
+        '/settings', 
+        '/notifications'
+    ];
 
-    // Check if the request path is protected and if the user has no token
-    if (protectedPaths.some(path => request.nextUrl.pathname.startsWith(path))) {
+    // Check if the request path is in the protectedPaths and if the user has no token
+    if (protectedPaths.includes(request.nextUrl.pathname)) {
         if (!token) {
             // If no token, redirect to login page
             return NextResponse.redirect(new URL('/login', request.url));
@@ -39,9 +47,8 @@ export const config = {
     matcher: [
         '/', 
         '/login', 
-        '/dashboard/:path*', 
-        '/users/:path*', 
-        '/videos/:path*', 
+        '/users', 
+        '/videos', 
         '/settings', 
         '/notifications'
     ],
