@@ -3,21 +3,27 @@ import cookie from 'cookie';
 
 export function middleware(request) {
     console.log("Middleware triggered");
-    
-    const cookies = cookie.parse(request.headers.get('cookie') || '');
+
+    // Safely parse cookies. If no cookies exist, it returns an empty object.
+    let cookies = {};
+    try {
+        cookies = cookie.parse(request.headers.get('cookie') || '');
+    } catch (error) {
+        console.error("Error parsing cookies:", error);
+    }
+
     const token = cookies.token;
-    
     const loggedInUserNotAccessiblePaths = request.nextUrl.pathname.startsWith('/login');
 
     // Redirect logged-in users from the /login page to the homepage
-    if (loggedInUserNotAccessiblePaths) {
-        if (token) {
-            return NextResponse.redirect(new URL('/', request.url));
-        }
+    if (loggedInUserNotAccessiblePaths && token) {
+        return NextResponse.redirect(new URL('/', request.url));
     }
 
-    // Redirect users without a token trying to access protected paths
+    // Define protected paths
     const protectedPaths = ['/dashboard', '/users', '/videos', '/settings', '/notifications'];
+
+    // Check if the request path is protected and if the user has no token
     if (protectedPaths.some(path => request.nextUrl.pathname.startsWith(path))) {
         if (!token) {
             // If no token, redirect to login page
@@ -30,5 +36,13 @@ export function middleware(request) {
 }
 
 export const config = {
-    matcher: ['/', '/login', '/dashboard/:path*', '/users/:path*', '/videos/:path*', '/settings', '/notifications'],
+    matcher: [
+        '/', 
+        '/login', 
+        '/dashboard/:path*', 
+        '/users/:path*', 
+        '/videos/:path*', 
+        '/settings', 
+        '/notifications'
+    ],
 };
