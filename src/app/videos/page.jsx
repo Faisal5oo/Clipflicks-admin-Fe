@@ -15,7 +15,7 @@ const VideosPage = () => {
   useEffect(() => {
     const fetchVideos = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/all`);
+        const response = await axios.get(`/api/submissions`);
         setVideos(response.data);
       } catch (err) {
         setError(err.message);

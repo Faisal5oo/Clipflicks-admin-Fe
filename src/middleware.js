@@ -26,7 +26,7 @@ export function middleware(request) {
         '/users', 
         '/videos', 
         '/users/:id*', 
-        '/videos/:id*'  ,
+        '/videos/:id*',
         '/settings', 
         '/notifications'
     ];

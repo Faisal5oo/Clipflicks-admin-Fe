@@ -54,7 +54,8 @@ const SubmissionSchema = new mongoose.Schema(
   
   
 export const Submission = mongoose.models.Submission || mongoose.model("Submission", SubmissionSchema);
-export const Admin = mongoose.models.Admin || mongoose.model("Admin", adminSchema);
+const Admin = mongoose.models.Admin || mongoose.model("Admin", adminSchema);
 export const Employee = mongoose.models.Employee || mongoose.model("Employee", employeeSchema);
 export const Notification = mongoose.models.Notification || mongoose.model("Notification", notificationSchema);
   
+export default Admin; 

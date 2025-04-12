@@ -19,13 +19,13 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:5000/api/users/login", {
+      const response = await axios.post("/api/users/login", {
         email,
         password,
       });
 
       if (response.data.token) {
-        setCookie("token", response.data.token, { maxAge: 60 * 60 * 24 * 7, path: "/" }); // 1-week expiry
+        setCookie("token", response.data.token, { maxAge: 60 * 60 * 24 * 7, path: "/" });
         router.push("/");
       }
     } catch (error) {
