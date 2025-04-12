@@ -138,108 +138,108 @@ export async function POST(req) {
   }
 }
 
-// Get recent submissions
-export async function GET(req) {
-  await dbConnect();
+// // Get recent submissions
+// export async function GET(req) {
+//   await dbConnect();
 
-  try {
-    const recentSubmissions = await Submission.find({})
-      .sort({ createdAt: -1 })
-      .limit(3)
-      .select("firstName lastName createdAt _id");
+//   try {
+//     const recentSubmissions = await Submission.find({})
+//       .sort({ createdAt: -1 })
+//       .limit(3)
+//       .select("firstName lastName createdAt _id");
 
-    const formatted = recentSubmissions.map((sub) => ({
-      creatorName: `${sub.firstName} ${sub.lastName}`,
-      createdAt: sub.createdAt,
-      id: sub._id,
-    }));
+//     const formatted = recentSubmissions.map((sub) => ({
+//       creatorName: `${sub.firstName} ${sub.lastName}`,
+//       createdAt: sub.createdAt,
+//       id: sub._id,
+//     }));
 
-    return NextResponse.json({ recentSubmissions: formatted }, { status: 200 });
-  } catch (error) {
-    console.error("Error fetching recent submissions:", error);
-    return NextResponse.json({ error: "Failed to fetch recent submissions" }, { status: 500 });
-  }
-}
+//     return NextResponse.json({ recentSubmissions: formatted }, { status: 200 });
+//   } catch (error) {
+//     console.error("Error fetching recent submissions:", error);
+//     return NextResponse.json({ error: "Failed to fetch recent submissions" }, { status: 500 });
+//   }
+// }
 
 // Get all submissions
-export async function GET(req) {
-  await dbConnect();
+// export async function GET(req) {
+//   await dbConnect();
 
-  try {
-    const submissions = await Submission.find();
+//   try {
+//     const submissions = await Submission.find();
 
-    const submissionsWithEmployee = await Promise.all(
-      submissions.map(async (submission) => {
-        const employee = await Employee.findById(submission.empRef).select("name");
-        return {
-          id: submission._id,
-          employeeName: employee ? employee.name : "Unknown",
-          videoURL: submission.videoURL,
-          creatorName: `${submission.firstName} ${submission.lastName}`,
-          email: submission.email,
-        };
-      })
-    );
+//     const submissionsWithEmployee = await Promise.all(
+//       submissions.map(async (submission) => {
+//         const employee = await Employee.findById(submission.empRef).select("name");
+//         return {
+//           id: submission._id,
+//           employeeName: employee ? employee.name : "Unknown",
+//           videoURL: submission.videoURL,
+//           creatorName: `${submission.firstName} ${submission.lastName}`,
+//           email: submission.email,
+//         };
+//       })
+//     );
 
-    return NextResponse.json(submissionsWithEmployee, { status: 200 });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-  }
-}
+//     return NextResponse.json(submissionsWithEmployee, { status: 200 });
+//   } catch (error) {
+//     console.error(error);
+//     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+//   }
+// }
 
 // Get stats (total videos and total employees)
-export async function GET(req) {
-  await dbConnect();
+// export async function GET(req) {
+//   await dbConnect();
 
-  try {
-    const totalVideos = await Submission.countDocuments();
-    const totalEmployees = await Employee.countDocuments();
+//   try {
+//     const totalVideos = await Submission.countDocuments();
+//     const totalEmployees = await Employee.countDocuments();
 
-    return NextResponse.json({ totalVideos, totalEmployees }, { status: 200 });
-  } catch (error) {
-    console.error('Error fetching dashboard stats:', error);
-    return NextResponse.json({ message: 'Server error' }, { status: 500 });
-  }
-}
+//     return NextResponse.json({ totalVideos, totalEmployees }, { status: 200 });
+//   } catch (error) {
+//     console.error('Error fetching dashboard stats:', error);
+//     return NextResponse.json({ message: 'Server error' }, { status: 500 });
+//   }
+// }
 
-// Get submission by ID
-export async function GET(req) {
-  await dbConnect();
+// // Get submission by ID
+// export async function GET(req) {
+//   await dbConnect();
 
-  try {
-    const { id } = req.params;
-    const submission = await Submission.findById(id);
+//   try {
+//     const { id } = req.params;
+//     const submission = await Submission.findById(id);
 
-    if (!submission) {
-      return NextResponse.json({ error: "Submission not found" }, { status: 404 });
-    }
+//     if (!submission) {
+//       return NextResponse.json({ error: "Submission not found" }, { status: 404 });
+//     }
 
-    const employee = await Employee.findById(submission.empRef);
+//     const employee = await Employee.findById(submission.empRef);
 
-    const videoDetails = {
-      id: submission._id,
-      title: submission.title || "Untitled Video",
-      videoURL: submission.videoURL,
-      creatorName: `${submission.firstName} ${submission.lastName}`,
-      email: submission.email,
-      socialHandle: submission.socialHandle,
-      country: submission.country,
-      rawVideo: submission.rawVideo,
-      recordedVideo: submission.recordedVideo,
-      notUploadedElsewhere: submission.notUploadedElsewhere,
-      agreed18: submission.agreed18,
-      employee: submission.empRef ? { name: employee.name, email: employee.email } : null,
-      signature: submission.signature,
-      createdAt: submission.createdAt,
-    };
+//     const videoDetails = {
+//       id: submission._id,
+//       title: submission.title || "Untitled Video",
+//       videoURL: submission.videoURL,
+//       creatorName: `${submission.firstName} ${submission.lastName}`,
+//       email: submission.email,
+//       socialHandle: submission.socialHandle,
+//       country: submission.country,
+//       rawVideo: submission.rawVideo,
+//       recordedVideo: submission.recordedVideo,
+//       notUploadedElsewhere: submission.notUploadedElsewhere,
+//       agreed18: submission.agreed18,
+//       employee: submission.empRef ? { name: employee.name, email: employee.email } : null,
+//       signature: submission.signature,
+//       createdAt: submission.createdAt,
+//     };
 
-    return NextResponse.json(videoDetails, { status: 200 });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-  }
-}
+//     return NextResponse.json(videoDetails, { status: 200 });
+//   } catch (error) {
+//     console.error(error);
+//     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+//   }
+// }
 
 // Delete submission by ID
 export async function DELETE(req) {
