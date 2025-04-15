@@ -38,12 +38,20 @@ const VideosPage = () => {
     document.body.removeChild(link);
   };
 
-  // Function to delete video (Mock function, replace with API call)
-  const deleteVideo = (id) => {
-    setVideos(videos.filter((video) => video.id !== id));
-  };
-
-  console.log("videos ")
+  
+const deleteVideo = async (id) => {
+  try {
+    // Call DELETE API
+    await axios.delete(`/api/submissions/${id}`);
+    
+    // Update local state after successful deletion
+    setVideos((prev) => prev.filter((video) => video.id !== id));
+    
+    console.log(`Video with ID ${id} deleted.`);
+  } catch (error) {
+    console.error("Error deleting video:", error);
+  }
+};
 
   return (
     <Layout>

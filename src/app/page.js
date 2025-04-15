@@ -16,9 +16,9 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     try {
       const [submissionsRes, employeesRes, statsRes] = await Promise.all([
-        axios.get("http://localhost:5000/api/recent-submissions"),
-        axios.get("http://localhost:5000/api/overview"),
-        axios.get("http://localhost:5000/api/stats"),
+        axios.get("/api/recent-submissions"),
+        axios.get("/api/top-employees"),
+        axios.get("/api/stats"),
       ]);
       setRecentSubmissions(submissionsRes.data.recentSubmissions);
       setTopEmployees(employeesRes.data);

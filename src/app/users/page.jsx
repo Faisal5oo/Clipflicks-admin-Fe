@@ -5,7 +5,7 @@ import Link from "next/link";
 import { PlusCircle, Eye, Pencil, Trash2 } from "lucide-react";
 import Layout from "@/components/LayoutWrapper";
 
-const API_URL = "http://localhost:5000/api/users";
+const API_URL = "/api/employee/create";
 const TOKEN = "YOUR_JWT_TOKEN_HERE";
 
 const Users = () => {
@@ -19,7 +19,7 @@ const Users = () => {
   const fetchEmployees = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API_URL}/all`, {
+      const response = await axios.get(`/api/employee/`, {
         headers: { Authorization: `Bearer ${TOKEN}` },
       });
       setEmployees(response.data);
@@ -43,7 +43,7 @@ const Users = () => {
     if (!newEmployee.name || !newEmployee.email) return;
 
     try {
-      await axios.post(`${API_URL}/create`, newEmployee, {
+      await axios.post(`/api/employee/create`, newEmployee, {
         headers: { Authorization: `Bearer ${TOKEN}` },
       });
       setNewEmployee({ name: "", email: "" });
@@ -55,7 +55,7 @@ const Users = () => {
 
   const deleteEmployee = async (id) => {
     try {
-      await axios.delete(`${API_URL}/delete/${id}`, {
+      await axios.delete(`/api/employee/${id}`, {
         headers: { Authorization: `Bearer ${TOKEN}` },
       });
       fetchEmployees(); // Refetch employees
@@ -76,7 +76,7 @@ const Users = () => {
   const updateEmployee = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`${API_URL}/edit/${editEmployee._id}`, editEmployee, {
+      await axios.put(`/api/employee/${editEmployee._id}`, editEmployee, {
         headers: { Authorization: `Bearer ${TOKEN}` },
       });
 

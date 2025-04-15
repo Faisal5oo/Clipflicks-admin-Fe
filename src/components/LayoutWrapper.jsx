@@ -12,6 +12,7 @@ import {
   Menu,
 } from "lucide-react";
 import Image from "next/image";
+import axios from "axios";
 
 const menuItems = [
   { text: "Dashboard", icon: <LayoutDashboard />, href: "/" },
@@ -37,6 +38,15 @@ const Layout = ({ children }) => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      await axios.post("/api/users/logout");
+      router.push("/login");
+    } catch (error) {
+      console.error("Error during logout", error);
+    }
+  };
 
   return (
     <div className="flex min-h-screen">
@@ -84,17 +94,14 @@ const Layout = ({ children }) => {
 
         {/* Logout */}
         <div className="mt-auto">
-          <button
-            onClick={() => {
-              document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"; // Remove the token
-              router.push("/login"); // Redirect to login page
-            }}
-            className="flex items-center gap-4 p-3 text-red-500 w-full hover:bg-red-900 transition"
-          >
-            <LogOut size={24} />
-            {open && <span>Logout</span>}
-          </button>
-        </div>
+      <button
+        onClick={() => handleLogout()}
+        className="flex items-center gap-4 p-3 text-red-500 w-full hover:bg-red-900 transition"
+      >
+        <LogOut size={24} />
+        {open && <span>Logout</span>}
+      </button>
+    </div>
       </div>
 
       {/* Main Content - Adjust based on sidebar */}

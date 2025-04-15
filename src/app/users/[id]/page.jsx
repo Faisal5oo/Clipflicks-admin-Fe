@@ -6,7 +6,7 @@ import { useParams } from "next/navigation";
 import axios from "axios";
 import Layout from "../../../components/LayoutWrapper";
 
-const API_URL = "http://localhost:5000/api/users"; // Replace with actual API
+const API_URL = "/api/employee"; // Replace with actual API
 const TOKEN = "your_token_here"; // Replace with your actual token
 
 const EmployeeDetail = () => {

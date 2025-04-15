@@ -5,6 +5,44 @@ import nodemailer from "nodemailer";
 import fs from "fs";
 import path from "path";
 
+
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      "Access-Control-Allow-Origin": "https://clipflicks-website.vercel.app/",
+      "Access-Control-Allow-Methods": "POST",
+      "Access-Control-Allow-Headers": "Content-Type",
+    },
+  });
+}
+
+export async function GET() {
+  await dbConnect();
+
+  try {
+    const submissions = await Submission.find();
+
+    const submissionsWithEmployee = await Promise.all(
+      submissions.map(async (submission) => {
+        const employee = await Employee.findById(submission.empRef).select("name");
+        return {
+          id: submission._id,
+          employeeName: employee ? employee.name : "Unknown",
+          videoURL: submission.videoURL,
+          creatorName: `${submission.firstName} ${submission.lastName}`,
+          email: submission.email,
+        };
+      })
+    );
+
+    return NextResponse.json(submissionsWithEmployee, { status: 200 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}
+
 export async function POST(req) {
   await dbConnect();
 
@@ -49,14 +87,19 @@ export async function POST(req) {
     if (empRef) {
       employee = await Employee.findById(empRef);
       if (!employee) {
-        return NextResponse.json(
-          { error: "Employee not found" },
-          { status: 400 }
+        return new NextResponse(
+          JSON.stringify({ error: "Employee not found" }),
+          {
+            status: 400,
+            headers: {
+              "Access-Control-Allow-Origin": "http://localhost:3000",
+            },
+          }
         );
       }
     }
 
-    // Saving signature image
+    // Save signature image
     const uploadsDir = path.join(process.cwd(), "public", "uploads");
     if (!fs.existsSync(uploadsDir)) {
       fs.mkdirSync(uploadsDir, { recursive: true });
@@ -74,7 +117,6 @@ export async function POST(req) {
       },
     });
 
-    // Admin email options
     const adminMailOptions = {
       from: "faizanamir103@gmail.com",
       to: "faizanamir103@gmail.com",
@@ -107,36 +149,46 @@ export async function POST(req) {
 
     await transporter.sendMail(adminMailOptions);
 
-    // If empRef exists, send email to the employee as well
     if (employee) {
-      const employeeMailOptions = {
+      await transporter.sendMail({
         from: "faizanamir103@gmail.com",
         to: employee.email,
         subject: "New Video Submission Notification",
-        html: `
-          <p>Hello ${employee.name},</p>
-          <p>You have a new video submission from <strong>${firstName} ${lastName}</strong>.</p>
-        `,
-      };
-      await transporter.sendMail(employeeMailOptions);
+        html: `<p>Hello ${employee.name},</p>
+               <p>You have a new video submission from <strong>${firstName} ${lastName}</strong>.</p>`,
+      });
     }
 
-    // Creating a new notification
-    const newNotification = new Notification({
+    await new Notification({
       creatorName: `${firstName} ${lastName}`,
       employeeName: employee ? employee.name : "N/A",
       message: `New video submission from ${firstName} ${lastName}`,
       isRead: false,
-    });
+    }).save();
 
-    await newNotification.save();
-
-    return NextResponse.json({ message: "Submission successful, emails sent" }, { status: 200 });
+    return new NextResponse(
+      JSON.stringify({ message: "Submission successful, emails sent" }),
+      {
+        status: 200,
+        headers: {
+          "Access-Control-Allow-Origin": "http://localhost:3000",
+        },
+      }
+    );
   } catch (error) {
     console.error("Error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return new NextResponse(
+      JSON.stringify({ error: "Internal Server Error" }),
+      {
+        status: 500,
+        headers: {
+          "Access-Control-Allow-Origin": "http://localhost:3000",
+        },
+      }
+    );
   }
 }
+
 
 // // Get recent submissions
 // export async function GET(req) {
@@ -203,59 +255,5 @@ export async function POST(req) {
 //   }
 // }
 
-// // Get submission by ID
-// export async function GET(req) {
-//   await dbConnect();
+// Get submission by ID
 
-//   try {
-//     const { id } = req.params;
-//     const submission = await Submission.findById(id);
-
-//     if (!submission) {
-//       return NextResponse.json({ error: "Submission not found" }, { status: 404 });
-//     }
-
-//     const employee = await Employee.findById(submission.empRef);
-
-//     const videoDetails = {
-//       id: submission._id,
-//       title: submission.title || "Untitled Video",
-//       videoURL: submission.videoURL,
-//       creatorName: `${submission.firstName} ${submission.lastName}`,
-//       email: submission.email,
-//       socialHandle: submission.socialHandle,
-//       country: submission.country,
-//       rawVideo: submission.rawVideo,
-//       recordedVideo: submission.recordedVideo,
-//       notUploadedElsewhere: submission.notUploadedElsewhere,
-//       agreed18: submission.agreed18,
-//       employee: submission.empRef ? { name: employee.name, email: employee.email } : null,
-//       signature: submission.signature,
-//       createdAt: submission.createdAt,
-//     };
-
-//     return NextResponse.json(videoDetails, { status: 200 });
-//   } catch (error) {
-//     console.error(error);
-//     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-//   }
-// }
-
-// Delete submission by ID
-export async function DELETE(req) {
-  await dbConnect();
-
-  try {
-    const { id } = req.params;
-    const deletedSubmission = await Submission.findByIdAndDelete(id);
-
-    if (!deletedSubmission) {
-      return NextResponse.json({ error: "Submission not found" }, { status: 404 });
-    }
-
-    return NextResponse.json({ message: "Submission deleted successfully" }, { status: 200 });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-  }
-}

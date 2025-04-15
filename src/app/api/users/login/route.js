@@ -25,7 +25,7 @@ export async function POST(req) {
 
     // ✅ Create JWT Token
     const token = jwt.sign({ id: admin._id, email: admin.email }, JWT_SECRET, {
-      expiresIn: '7d',
+      expiresIn: '1d',
     });
 
     // ✅ Set Token in Cookie
@@ -41,7 +41,7 @@ export async function POST(req) {
       secure: process.env.NODE_ENV === 'production',
       path: '/',
       sameSite: 'strict',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24 * 1, // 1 days
     });
 
     return response;

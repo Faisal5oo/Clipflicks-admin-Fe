@@ -17,7 +17,7 @@ const Notifications = () => {
   // Fetch notifications using Axios
   const fetchNotifications = async () => {
     try {
-      const { data } = await axios.get("http://localhost:5000/api/notification/all");
+      const { data } = await axios.get("/api/notifications");
       setNotifications(data); // Store all notifications
     } catch (error) {
       console.error("Error fetching notifications:", error);
