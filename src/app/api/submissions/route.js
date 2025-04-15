@@ -6,13 +6,16 @@ import fs from "fs";
 import path from "path";
 
 
+const allowedOrigin = "https://clipflicks-website.vercel.app";
+
 export async function OPTIONS() {
   return new NextResponse(null, {
     status: 204,
     headers: {
-      "Access-Control-Allow-Origin": "https://clipflicks-website.vercel.app/",
-      "Access-Control-Allow-Methods": "POST",
+      "Access-Control-Allow-Origin": allowedOrigin,
+      "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Max-Age": "86400",
     },
   });
 }
@@ -22,7 +25,6 @@ export async function GET() {
 
   try {
     const submissions = await Submission.find();
-
     const submissionsWithEmployee = await Promise.all(
       submissions.map(async (submission) => {
         const employee = await Employee.findById(submission.empRef).select("name");
@@ -36,10 +38,20 @@ export async function GET() {
       })
     );
 
-    return NextResponse.json(submissionsWithEmployee, { status: 200 });
+    return new NextResponse(JSON.stringify(submissionsWithEmployee), {
+      status: 200,
+      headers: {
+        "Access-Control-Allow-Origin": allowedOrigin,
+      },
+    });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    console.error("GET error:", error);
+    return new NextResponse(JSON.stringify({ error: "Internal Server Error" }), {
+      status: 500,
+      headers: {
+        "Access-Control-Allow-Origin": allowedOrigin,
+      },
+    });
   }
 }
 
@@ -83,19 +95,16 @@ export async function POST(req) {
 
     await submission.save();
 
-    let employee;
+    let employee = null;
     if (empRef) {
       employee = await Employee.findById(empRef);
       if (!employee) {
-        return new NextResponse(
-          JSON.stringify({ error: "Employee not found" }),
-          {
-            status: 400,
-            headers: {
-              "Access-Control-Allow-Origin": "https://clipflicks-website.vercel.app/",
-            },
-          }
-        );
+        return new NextResponse(JSON.stringify({ error: "Employee not found" }), {
+          status: 400,
+          headers: {
+            "Access-Control-Allow-Origin": allowedOrigin,
+          },
+        });
       }
     }
 
@@ -106,9 +115,11 @@ export async function POST(req) {
     }
 
     const signatureBuffer = Buffer.from(signature.split(",")[1], "base64");
-    const signaturePath = path.join(uploadsDir, `signature_${Date.now()}.png`);
+    const signatureFilename = `signature_${Date.now()}.png`;
+    const signaturePath = path.join(uploadsDir, signatureFilename);
     fs.writeFileSync(signaturePath, signatureBuffer);
 
+    // Setup email
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -128,8 +139,7 @@ export async function POST(req) {
         <p><strong>Country:</strong> ${country}</p>
         <p><strong>Social Handle:</strong> ${socialHandle}</p>
         <p><strong>Video URL:</strong> <a href="${videoURL}" target="_blank">Watch Video</a></p>
-        <p><strong>Raw Video Link:</strong> <a href="${rawVideo}" target="_blank">Download</a></p>
-        <h4>Consent & Agreement</h4>
+        <p><strong>Raw Video:</strong> <a href="${rawVideo}" target="_blank">Download</a></p>
         <ul>
           <li>✔️ 18+: ${agreed18 ? "Yes" : "No"}</li>
           <li>✔️ Terms Accepted: ${agreedTerms ? "Yes" : "No"}</li>
@@ -140,7 +150,7 @@ export async function POST(req) {
       `,
       attachments: [
         {
-          filename: "signature.png",
+          filename: signatureFilename,
           path: signaturePath,
           cid: "signatureImage",
         },
@@ -159,6 +169,7 @@ export async function POST(req) {
       });
     }
 
+    // Save notification
     await new Notification({
       creatorName: `${firstName} ${lastName}`,
       employeeName: employee ? employee.name : "N/A",
@@ -166,29 +177,22 @@ export async function POST(req) {
       isRead: false,
     }).save();
 
-    return new NextResponse(
-      JSON.stringify({ message: "Submission successful, emails sent" }),
-      {
-        status: 200,
-        headers: {
-          "Access-Control-Allow-Origin": "https://clipflicks-website.vercel.app/",
-        },
-      }
-    );
+    return new NextResponse(JSON.stringify({ message: "Submission successful, emails sent" }), {
+      status: 200,
+      headers: {
+        "Access-Control-Allow-Origin": allowedOrigin,
+      },
+    });
   } catch (error) {
-    console.error("Error:", error);
-    return new NextResponse(
-      JSON.stringify({ error: "Internal Server Error" }),
-      {
-        status: 500,
-        headers: {
-          "Access-Control-Allow-Origin": "http://localhost:3000",
-        },
-      }
-    );
+    console.error("POST error:", error);
+    return new NextResponse(JSON.stringify({ error: "Internal Server Error" }), {
+      status: 500,
+      headers: {
+        "Access-Control-Allow-Origin": allowedOrigin,
+      },
+    });
   }
 }
-
 
 // // Get recent submissions
 // export async function GET(req) {
