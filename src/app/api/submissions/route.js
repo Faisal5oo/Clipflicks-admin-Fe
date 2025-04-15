@@ -92,7 +92,7 @@ export async function POST(req) {
           {
             status: 400,
             headers: {
-              "Access-Control-Allow-Origin": "http://localhost:3000",
+              "Access-Control-Allow-Origin": "https://clipflicks-website.vercel.app/",
             },
           }
         );
@@ -171,7 +171,7 @@ export async function POST(req) {
       {
         status: 200,
         headers: {
-          "Access-Control-Allow-Origin": "http://localhost:3000",
+          "Access-Control-Allow-Origin": "https://clipflicks-website.vercel.app/",
         },
       }
     );

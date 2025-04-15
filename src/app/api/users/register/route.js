@@ -15,7 +15,7 @@ export async function POST(req) {
       password: hashedPassword,
     });
 
-    admin.formLink = `http://localhost:3000/submit-video/${admin._id}`;
+    admin.formLink = `https://clipflicks-website.vercel.app/${admin._id}`;
     await admin.save();
 
     return NextResponse.json({ message: "Admin registered", formLink: admin.formLink }, { status: 201 });
