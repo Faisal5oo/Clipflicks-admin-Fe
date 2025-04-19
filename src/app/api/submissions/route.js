@@ -28,7 +28,9 @@ export async function GET() {
     const submissions = await Submission.find();
     const submissionsWithEmployee = await Promise.all(
       submissions.map(async (submission) => {
-        const employee = await Employee.findById(submission.empRef).select("name");
+        const employee = await Employee.findById(submission.empRef).select(
+          "name"
+        );
         return {
           id: submission._id,
           employeeName: employee ? employee.name : "Unknown",
@@ -47,12 +49,15 @@ export async function GET() {
     });
   } catch (error) {
     console.error("GET error:", error);
-    return new NextResponse(JSON.stringify({ error: "Internal Server Error" }), {
-      status: 500,
-      headers: {
-        "Access-Control-Allow-Origin": allowedOrigin,
-      },
-    });
+    return new NextResponse(
+      JSON.stringify({ error: "Internal Server Error" }),
+      {
+        status: 500,
+        headers: {
+          "Access-Control-Allow-Origin": allowedOrigin,
+        },
+      }
+    );
   }
 }
 
@@ -100,17 +105,22 @@ export async function POST(req) {
     if (empRef) {
       employee = await Employee.findById(empRef);
       if (!employee) {
-        return new NextResponse(JSON.stringify({ error: "Employee not found" }), {
-          status: 400,
-          headers: {
-            "Access-Control-Allow-Origin": allowedOrigin,
-          },
-        });
+        return new NextResponse(
+          JSON.stringify({ error: "Employee not found" }),
+          {
+            status: 400,
+            headers: {
+              "Access-Control-Allow-Origin": allowedOrigin,
+            },
+          }
+        );
       }
     }
 
     // Save signature image
-    const uploadsDir = path.join(process.cwd(), "public", "uploads");
+
+    const uploadsDir = path.join("/tmp", "uploads");
+
     if (!fs.existsSync(uploadsDir)) {
       fs.mkdirSync(uploadsDir, { recursive: true });
     }
@@ -144,7 +154,9 @@ export async function POST(req) {
         <ul>
           <li>✔️ 18+: ${agreed18 ? "Yes" : "No"}</li>
           <li>✔️ Terms Accepted: ${agreedTerms ? "Yes" : "No"}</li>
-          <li>✔️ Exclusive Rights NOT Given: ${exclusiveRights ? "Yes" : "No"}</li>
+          <li>✔️ Exclusive Rights NOT Given: ${
+            exclusiveRights ? "Yes" : "No"
+          }</li>
         </ul>
         <p><strong>Signature:</strong></p>
         <img src="cid:signatureImage" width="200"/>
@@ -178,20 +190,26 @@ export async function POST(req) {
       isRead: false,
     }).save();
 
-    return new NextResponse(JSON.stringify({ message: "Submission successful, emails sent" }), {
-      status: 200,
-      headers: {
-        "Access-Control-Allow-Origin": allowedOrigin,
-      },
-    });
+    return new NextResponse(
+      JSON.stringify({ message: "Submission successful, emails sent" }),
+      {
+        status: 200,
+        headers: {
+          "Access-Control-Allow-Origin": allowedOrigin,
+        },
+      }
+    );
   } catch (error) {
     console.error("POST error:", error);
-    return new NextResponse(JSON.stringify({ error: "Internal Server Error" }), {
-      status: 500,
-      headers: {
-        "Access-Control-Allow-Origin": allowedOrigin,
-      },
-    });
+    return new NextResponse(
+      JSON.stringify({ error: "Internal Server Error" }),
+      {
+        status: 500,
+        headers: {
+          "Access-Control-Allow-Origin": allowedOrigin,
+        },
+      }
+    );
   }
 }
 
@@ -261,4 +279,3 @@ export async function POST(req) {
 // }
 
 // Get submission by ID
-
