@@ -6,13 +6,19 @@ import fs from "fs";
 import path from "path";
 
 
-const allowedOrigin = "https://clipflicks-website.vercel.app";
+const allowedOrigins = [
+  "https://clipflicks-website.vercel.app",
+  "http://localhost:3000",
+];
 
-export async function OPTIONS() {
+export async function OPTIONS(request) {
+  const origin = request.headers.get("origin") || "";
+  const isAllowedOrigin = allowedOrigins.includes(origin);
+
   return new NextResponse(null, {
     status: 204,
     headers: {
-      "Access-Control-Allow-Origin": allowedOrigin,
+      "Access-Control-Allow-Origin": isAllowedOrigin ? origin : "",
       "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
       "Access-Control-Max-Age": "86400",

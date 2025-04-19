@@ -6,7 +6,7 @@ export async function GET() {
   await dbConnect();
 
   try {
-    const notifications = await Notification.find().sort({ createdAt: -1 }); // latest first
+    const notifications = await Notification.find().sort({ createdAt: -1 });
     return NextResponse.json(notifications, { status: 200 });
   } catch (error) {
     console.error('Error fetching notifications:', error);
