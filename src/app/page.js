@@ -38,8 +38,8 @@ const Dashboard = () => {
 
   return (
     <Layout>
-      <div className="p-6 text-black">
-        <h1 className="text-3xl font-bold text-white mb-8">Dashboard</h1>
+      <div className="text-black mt-10">
+        <h1 className="text-3xl font-bold text-white mb-8 mt-6">Dashboard</h1>
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">

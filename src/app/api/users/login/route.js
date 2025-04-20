@@ -1,11 +1,10 @@
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { NextResponse } from 'next/server';
-import Admin from '../../../../models/Submission'; // Replace with your actual Admin model
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { NextResponse } from "next/server";
+import Admin from "../../../../models/Submission"; // This should be your actual Admin model
 import dbConnect from "../../../../lib/dbConnect";
 
-
-const JWT_SECRET = process.env.JWT_SECRET || 'your-fallback-secret'; // Keep this secret in env
+const JWT_SECRET = process.env.JWT_SECRET || "your-fallback-secret";
 
 export async function POST(req) {
   try {
@@ -13,41 +12,55 @@ export async function POST(req) {
 
     const { email, password } = await req.json();
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // 1. Check if Admin exists
+    const admin = await Admin.findOne({ email });
+    if (!admin) {
+      return NextResponse.json(
+        { error: "Admin not found" },
+        { status: 404 }
+      );
+    }
 
-    const admin = new Admin({
-      email,
-      password: hashedPassword,
-    });
+    // 2. Compare passwords
+    const isMatch = await bcrypt.compare(password, admin.password);
+    if (!isMatch) {
+      return NextResponse.json(
+        { error: "Invalid email or password" },
+        { status: 401 }
+      );
+    }
 
-    admin.formLink = `https://clipflicks-website.vercel.app/${admin._id}`;
-    await admin.save();
-
-    // ✅ Create JWT Token
+    // 3. Generate token
     const token = jwt.sign({ id: admin._id, email: admin.email }, JWT_SECRET, {
-      expiresIn: '1d',
+      expiresIn: "1d",
     });
 
-    // ✅ Set Token in Cookie
+    // 4. Set cookie with token
     const response = NextResponse.json(
-      { message: 'Admin registered', formLink: admin.formLink },
-      { status: 201 }
+      {
+        message: "Login successful",
+        email: admin.email,
+        formLink: admin.formLink,
+      },
+      { status: 200 }
     );
 
     response.cookies.set({
-      name: 'token',
+      name: "token",
       value: token,
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      path: '/',
-      sameSite: 'strict',
-      maxAge: 60 * 60 * 24 * 1, // 1 days
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24 * 1,
     });
 
     return response;
-
   } catch (error) {
-    console.error('Registration error:', error);
-    return NextResponse.json({ error: 'Error registering admin' }, { status: 500 });
+    console.error("Login error:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

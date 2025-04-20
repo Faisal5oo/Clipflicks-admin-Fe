@@ -55,7 +55,7 @@ const deleteVideo = async (id) => {
 
   return (
     <Layout>
-      <div className="max-w-6xl mx-auto p-6 bg-white shadow-lg rounded-xl mt-6">
+      <div className="max-w-6xl mx-auto p-6 bg-white shadow-lg rounded-xl mt-10">
         <h1 className="text-3xl font-bold text-gray-800 mb-6">Videos</h1>
 
         {loading ? (

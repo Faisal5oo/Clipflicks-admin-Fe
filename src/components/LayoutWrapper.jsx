@@ -19,7 +19,7 @@ const menuItems = [
   { text: "Users", icon: <Users />, href: "/users" },
   { text: "Videos", icon: <Video />, href: "/videos" },
   { text: "Notifications", icon: <Bell />, href: "/notifications" },
-  { text: "Settings", icon: <Settings />, href: "/settings" },
+  { text: "Profile", icon: <Settings />, href: "/profile" },
 ];
 
 const Layout = ({ children }) => {

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import axios from "axios";
-import { getCookie, setCookie } from 'cookies-next';
+import { getCookie, setCookie } from "cookies-next";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -25,6 +25,14 @@ export default function AdminLogin() {
       });
 
       if (response.data.token !== null) {
+        const { _id, email, token, formLink } = response.data;
+
+        // Save in localStorage without encryption
+        localStorage.setItem(
+          "admin",
+          JSON.stringify({ id: _id, email, token, formLink })
+        );
+
         router.push("/");
       }
     } catch (error) {
@@ -37,7 +45,9 @@ export default function AdminLogin() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900 p-6">
       <div className="bg-black p-8 rounded-xl shadow-xl w-full max-w-md">
-        <h2 className="text-white text-3xl font-bold text-center">Admin Login</h2>
+        <h2 className="text-white text-3xl font-bold text-center">
+          Admin Login
+        </h2>
         {error && <p className="text-red-500 text-center mt-2">{error}</p>}
         <form className="mt-6 space-y-4" onSubmit={handleLogin}>
           <input

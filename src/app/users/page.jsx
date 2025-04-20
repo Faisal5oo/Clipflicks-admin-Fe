@@ -89,8 +89,8 @@ const Users = () => {
 
   return (
     <Layout>
-      <div className="p-6 bg-gradient-to-br from-gray-900 to-black">
-        <h1 className="text-3xl font-bold text-white mb-6">Employees</h1>
+      <div className="bg-gradient-to-br from-gray-900 to-black mt-10">
+        <h1 className="text-3xl font-bold text-white mb-8">Employees</h1>
 
         {/* Add Employee Form */}
         <form onSubmit={addEmployee} className="bg-white text-black p-6 rounded-lg shadow-md mb-6">

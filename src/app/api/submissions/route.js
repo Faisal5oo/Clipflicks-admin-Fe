@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "../../../lib/dbConnect";
 import { Submission, Employee, Notification } from "../../../models/Submission";
+import Admin from "../../../../models/Submission";
 import nodemailer from "nodemailer";
 import fs from "fs";
 import path from "path";
@@ -131,17 +132,24 @@ export async function POST(req) {
     fs.writeFileSync(signaturePath, signatureBuffer);
 
     // Setup email
+    // const transporter = nodemailer.createTransport({
+    //   service: "gmail",
+    //   auth: {
+    //     user: "faizanamir103@gmail.com",
+    //     pass: "gehr jwig stkl unmd",
+    //   },
+    // });
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "faizanamir103@gmail.com",
-        pass: "gehr jwig stkl unmd",
+        user: "Clipsflickofficial@gmail.com",
+        pass: "lkwd snbj fmfc ufhy",
       },
     });
 
     const adminMailOptions = {
-      from: "faizanamir103@gmail.com",
-      to: "faizanamir103@gmail.com",
+      from: "Clipsflickofficial@gmail.com",
+      to: "Clipsflickofficial@gmail.com",
       subject: "New Video Submission",
       html: `
         <h3>New Video Submission</h3>
@@ -174,7 +182,7 @@ export async function POST(req) {
 
     if (employee) {
       await transporter.sendMail({
-        from: "faizanamir103@gmail.com",
+        from: "Clipsflickofficial@gmail.com",
         to: employee.email,
         subject: "New Video Submission Notification",
         html: `<p>Hello ${employee.name},</p>
