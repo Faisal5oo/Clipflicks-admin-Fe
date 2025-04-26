@@ -31,7 +31,7 @@ export async function GET() {
 
   const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });
   
-  const publicUrl = `https://pub-${CLOUDFLARE_R2_ACCOUNT_ID}.r2.dev/${key}`;
+  const publicUrl = `https://pub-daf23a29f3b545799eae97159a0b83d6.r2.dev/${key}`;
 
   return new Response(JSON.stringify({
     uploadUrl: signedUrl,

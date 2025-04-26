@@ -10,7 +10,7 @@ export async function POST(req) {
     const employee = new Employee({ name, email });
     await employee.save();
 
-    const formLink = `https://clipflicks-website.vercel.app/submit-video/${employee._id}`;
+    const formLink = `https://www.clipsflick.com/submit-video/${employee._id}`;
     employee.formLink = formLink;
     await employee.save();
 
