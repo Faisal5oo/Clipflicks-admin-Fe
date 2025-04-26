@@ -17,7 +17,7 @@ import axios from "axios";
 const menuItems = [
   { text: "Dashboard", icon: <LayoutDashboard />, href: "/" },
   { text: "Users", icon: <Users />, href: "/users" },
-  { text: "Videos", icon: <Video />, href: "/videos" },
+  { text: "Submissions", icon: <Video />, href: "/videos" },
   { text: "Notifications", icon: <Bell />, href: "/notifications" },
   { text: "Profile", icon: <Settings />, href: "/profile" },
 ];

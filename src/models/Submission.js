@@ -16,6 +16,9 @@ const SubmissionSchema = new mongoose.Schema(
     email: String,
     rawVideo: String,
     recordedVideo: Boolean,
+    recordedBy: String,
+    submittedElsewhere: String,
+    otherCompanyName: String,
     notUploadedElsewhere: Boolean,
     agreed18: Boolean,
     agreedTerms: Boolean,
@@ -24,6 +27,7 @@ const SubmissionSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
 
 // Admin Schema
 const adminSchema = new mongoose.Schema(
