@@ -33,47 +33,31 @@ export async function OPTIONS(req) {
 export async function GET(req) {
   await dbConnect();
 
-  const origin = req.headers.get("Origin");
-  if (allowedOrigins.includes(origin)) {
-    try {
-      const submissions = await Submission.find();
-      const submissionsWithEmployee = await Promise.all(
-        submissions.map(async (submission) => {
-          const employee = await Employee.findById(submission.empRef).select(
-            "name"
-          );
-          return {
-            id: submission._id,
-            employeeName: employee ? employee.name : "Unknown",
-            videoURL: submission.videoURL,
-            creatorName: `${submission.firstName} ${submission.lastName}`,
-            email: submission.email,
-          };
-        })
-      );
+  try {
+    const submissions = await Submission.find();
+    const submissionsWithEmployee = await Promise.all(
+      submissions.map(async (submission) => {
+        const employee = await Employee.findById(submission.empRef).select(
+          "name"
+        );
+        return {
+          id: submission._id,
+          employeeName: employee ? employee.name : "Unknown",
+          videoURL: submission.videoURL,
+          creatorName: `${submission.firstName} ${submission.lastName}`,
+          email: submission.email,
+        };
+      })
+    );
 
-      return new NextResponse(JSON.stringify(submissionsWithEmployee), {
-        status: 200,
-        headers: {
-          "Access-Control-Allow-Origin": origin,
-        },
-      });
-    } catch (error) {
-      console.error("GET error:", error);
-      return new NextResponse(
-        JSON.stringify({ error: "Internal Server Error" }),
-        {
-          status: 500,
-          headers: {
-            "Access-Control-Allow-Origin": origin,
-          },
-        }
-      );
-    }
-  } else {
+    return new NextResponse(JSON.stringify(submissionsWithEmployee), {
+      status: 200,
+    });
+  } catch (error) {
+    console.error("GET error:", error);
     return new NextResponse(
-      JSON.stringify({ error: "Forbidden" }),
-      { status: 403 }
+      JSON.stringify({ error: "Internal Server Error" }),
+      { status: 500 }
     );
   }
 }
