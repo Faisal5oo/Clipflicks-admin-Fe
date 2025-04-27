@@ -6,7 +6,11 @@ export async function GET() {
   await dbConnect();
 
   try {
-    const notifications = await Notification.find().sort({ createdAt: -1 });
+    // Fetch notifications with populated submissionId
+    const notifications = await Notification.find()
+      .sort({ createdAt: -1 })
+      .lean(); // Use lean() to get plain JavaScript objects
+    
     return NextResponse.json(notifications, { status: 200 });
   } catch (error) {
     console.error('Error fetching notifications:', error);

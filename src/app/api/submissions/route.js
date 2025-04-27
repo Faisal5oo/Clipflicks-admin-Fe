@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import dbConnect from "../../../lib/dbConnect";
-import { Submission, Employee, Notification } from "../../../models/Submission";
+import Admin, { Submission, Employee, Notification } from "../../../models/Submission";
 import nodemailer from "nodemailer";
 import fs from "fs";
 import path from "path";
@@ -9,6 +9,10 @@ import path from "path";
 const allowedOrigins = [
   "https://clipsflick.com",
   "https://www.clipsflick.com",
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "http://127.0.0.1:3000",
+  "http://127.0.0.1:3001",
 ];
 
 // OPTIONS method to handle CORS preflight requests
@@ -35,22 +39,53 @@ export async function GET(req) {
 
   try {
     const submissions = await Submission.find();
-    const submissionsWithEmployee = await Promise.all(
+    const submissionsWithReference = await Promise.all(
       submissions.map(async (submission) => {
-        const employee = await Employee.findById(submission.empRef).select(
-          "name"
-        );
+        let refName = "Unassigned";
+        let refEmail = "";
+        let isAdmin = false;
+        
+        if (submission.empRef) {
+          // First check if it's an admin reference
+          if (submission.admin) {
+            const admin = await Admin.findById(submission.empRef);
+            if (admin) {
+              refName = admin.name || "Admin";
+              refEmail = admin.email;
+              isAdmin = true;
+            }
+          } else {
+            // Then check if it's an employee reference
+            const employee = await Employee.findById(submission.empRef);
+            if (employee) {
+              refName = employee.name;
+              refEmail = employee.email;
+            } else {
+              // If empRef exists but neither admin nor employee found, double check admin as fallback
+              const admin = await Admin.findById(submission.empRef);
+              if (admin) {
+                refName = admin.name || "Admin";
+                refEmail = admin.email;
+                isAdmin = true;
+              }
+            }
+          }
+        }
+        
         return {
           id: submission._id,
-          employeeName: employee ? employee.name : "Unknown",
+          employeeName: refName,
+          employeeEmail: refEmail,
+          isAdmin,
           videoURL: submission.videoURL,
           creatorName: `${submission.firstName} ${submission.lastName}`,
           email: submission.email,
+          createdAt: submission.createdAt,
         };
       })
     );
 
-    return new NextResponse(JSON.stringify(submissionsWithEmployee), {
+    return new NextResponse(JSON.stringify(submissionsWithReference), {
       status: 200,
     });
   } catch (error) {
@@ -90,8 +125,32 @@ export async function POST(req) {
         signature,
       } = await req.json();
 
+      // Check if empRef is an admin by looking in Admin collection first
+      let isAdmin = false;
+      let employee = null;
+      let refName = "Unassigned";
+      
+      if (empRef) {
+        // First check if empRef exists in Admin collection
+        const admin = await Admin.findById(empRef);
+        if (admin) {
+          isAdmin = true;
+          employee = admin;
+          refName = admin.name || "Admin";
+        } else {
+          // If not admin, check if it exists in Employee collection
+          employee = await Employee.findById(empRef);
+          if (employee) {
+            refName = employee.name;
+          } else {
+            refName = "Unassigned";
+          }
+        }
+      }
+
       const submission = new Submission({
         empRef,
+        admin: isAdmin, // Set admin flag based on whether empRef is an admin
         title,
         videoURL,
         firstName,
@@ -112,22 +171,6 @@ export async function POST(req) {
       });
 
       await submission.save();
-
-      let employee = null;
-      if (empRef) {
-        employee = await Employee.findById(empRef);
-        if (!employee) {
-          return new NextResponse(
-            JSON.stringify({ error: "Employee not found" }),
-            {
-              status: 400,
-              headers: {
-                "Access-Control-Allow-Origin": origin,
-              },
-            }
-          );
-        }
-      }
 
       const uploadsDir = path.join("/tmp", "uploads");
       if (!fs.existsSync(uploadsDir)) {
@@ -153,15 +196,16 @@ export async function POST(req) {
         subject: "New Video Submission",
         html: `
           <h3>New Video Submission</h3>
+          <p><strong>Video Title:</strong> ${title}</p>
           <p><strong>Name:</strong> ${firstName} ${lastName}</p>
           <p><strong>Email:</strong> ${email}</p>
           <p><strong>Country:</strong> ${country}</p>
           <p><strong>Social Handle:</strong> ${socialHandle}</p>
           <p><strong>Recorded By:</strong> ${recordedBy}</p>
-          <p><strong>Previously Submitted:</strong> ${submittedElsewhere}</p>
+          <p><strong>Submitted to any other company:</strong> ${submittedElsewhere}</p>
           ${
             submittedElsewhere === "Yes"
-              ? `<p><strong>Other Company:</strong> ${otherCompanyName}</p>`
+              ? `<p><strong>Company Name:</strong> ${otherCompanyName}</p>`
               : ""
           }
           <p><strong>Video URL:</strong> <a href="${videoURL}" target="_blank">Watch Video</a></p>
@@ -195,12 +239,15 @@ export async function POST(req) {
         });
       }
 
-      await new Notification({
+      const notification = await new Notification({
         creatorName: `${firstName} ${lastName}`,
-        employeeName: employee ? employee.name : "N/A",
+        employeeName: employee ? (isAdmin ? `Admin: ${employee.name}` : employee.name) : "Unassigned",
+        isAdmin: isAdmin,
+        submissionId: submission._id,
         message: `New video submission from ${firstName} ${lastName}`,
-        isRead: false,
       }).save();
+
+      console.log(`Notification created with submissionId: ${submission._id}`);
 
       return new NextResponse(
         JSON.stringify({ message: "Submission successful, emails sent" }),

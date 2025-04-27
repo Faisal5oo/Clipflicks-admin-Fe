@@ -1,60 +1,61 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Download, Eye, Trash2, Loader2, Search, Filter, SlidersHorizontal } from "lucide-react";
+import { Download, Eye, Trash2, Loader2, Search, Filter, SlidersHorizontal, ShieldCheck } from "lucide-react";
 import Layout from "@/components/LayoutWrapper";
 import axios from "axios";
 import Link from "next/link";
 
-const VideosPage = () => {
+const AdminVideosPage = () => {
   const [videos, setVideos] = useState([]);
   const [filteredVideos, setFilteredVideos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterEmployee, setFilterEmployee] = useState("");
-  const [uniqueEmployees, setUniqueEmployees] = useState([]);
+  const [admin, setAdmin] = useState(null);
 
-  // Fetch videos from API
+  // Fetch the current admin user from localStorage
   useEffect(() => {
-    const fetchVideos = async () => {
+    const adminData = localStorage.getItem("admin");
+    if (adminData) {
+      const parsedAdmin = JSON.parse(adminData);
+      setAdmin(parsedAdmin);
+    }
+  }, []);
+
+  // Fetch admin-specific videos from API
+  useEffect(() => {
+    if (!admin?._id) return;
+
+    const fetchAdminVideos = async () => {
       try {
-        const response = await axios.get(`/api/submissions`);
+        setLoading(true);
+        const response = await axios.get(`/api/admin/${admin._id}/videos`);
         setVideos(response.data);
         setFilteredVideos(response.data);
-        
-        // Extract unique employee names for filter dropdown
-        const employeeNames = [...new Set(response.data.map(video => video.employeeName))];
-        setUniqueEmployees(employeeNames);
       } catch (err) {
-        setError(err.message);
+        console.error("Error fetching admin videos:", err);
+        setError(err.message || "Failed to fetch videos");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchVideos();
-  }, []);
+    fetchAdminVideos();
+  }, [admin]);
 
-  // Handle search and filtering
+  // Handle search
   useEffect(() => {
-    let results = videos;
-    
-    // Filter by search term (check creator name and email)
-    if (searchTerm) {
-      results = results.filter(video => 
+    if (!searchTerm.trim()) {
+      setFilteredVideos(videos);
+    } else {
+      const filtered = videos.filter(video => 
         (video.creatorName && video.creatorName.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (video.email && video.email.toLowerCase().includes(searchTerm.toLowerCase()))
       );
+      setFilteredVideos(filtered);
     }
-    
-    // Filter by employee
-    if (filterEmployee) {
-      results = results.filter(video => video.employeeName === filterEmployee);
-    }
-    
-    setFilteredVideos(results);
-  }, [searchTerm, filterEmployee, videos]);
+  }, [searchTerm, videos]);
 
   // Function to download video
   const downloadVideo = (url) => {
@@ -77,12 +78,10 @@ const VideosPage = () => {
         const updatedVideos = videos.filter(video => video.id !== id);
         setVideos(updatedVideos);
         setFilteredVideos(updatedVideos.filter(video => 
-          (!searchTerm || ((video.creatorName && video.creatorName.toLowerCase().includes(searchTerm.toLowerCase())) || 
-            (video.email && video.email.toLowerCase().includes(searchTerm.toLowerCase())))) &&
-          (!filterEmployee || video.employeeName === filterEmployee)
+          !searchTerm || 
+          ((video.creatorName && video.creatorName.toLowerCase().includes(searchTerm.toLowerCase())) || 
+           (video.email && video.email.toLowerCase().includes(searchTerm.toLowerCase())))
         ));
-        
-        console.log(`Video with ID ${id} deleted.`);
       } catch (error) {
         console.error("Error deleting video:", error);
       }
@@ -92,7 +91,6 @@ const VideosPage = () => {
   // Reset filters
   const resetFilters = () => {
     setSearchTerm("");
-    setFilterEmployee("");
     setFilteredVideos(videos);
   }
 
@@ -100,13 +98,16 @@ const VideosPage = () => {
     <Layout>
       <div className="max-w-6xl mx-auto p-6 bg-white shadow-lg rounded-xl mt-10">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-white mb-6">Video Library</h1>
+          <h1 className="text-3xl font-bold text-gray-800 flex items-center">
+            <ShieldCheck className="mr-2 text-blue-500" />
+            Admin Videos
+          </h1>
           <span className="px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full font-medium">
             {filteredVideos.length} of {videos.length} Videos
           </span>
         </div>
         
-        {/* Search and Filters */}
+        {/* Search */}
         <div className="mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
@@ -116,31 +117,11 @@ const VideosPage = () => {
                 </div>
                 <input
                   type="text"
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-black"
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   placeholder="Search by creator or email..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
-              </div>
-            </div>
-            
-            <div className="w-full md:w-64">
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Filter className="h-5 w-5 text-gray-400" />
-                </div>
-                <select
-                  className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-black"
-                  value={filterEmployee}
-                  onChange={(e) => setFilterEmployee(e.target.value)}
-                >
-                  <option value="">All Employees</option>
-                  {uniqueEmployees.map((employee, index) => (
-                    <option key={index} value={employee}>
-                      {employee}
-                    </option>
-                  ))}
-                </select>
               </div>
             </div>
             
@@ -153,10 +134,16 @@ const VideosPage = () => {
           </div>
         </div>
 
-        {loading ? (
+        {!admin ? (
+          <div className="py-12 text-center text-gray-500">
+            <ShieldCheck className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+            <p className="text-lg">Login required</p>
+            <p className="text-sm mt-1">Please log in as an admin to view your videos</p>
+          </div>
+        ) : loading ? (
           <div className="flex justify-center items-center py-20">
             <Loader2 className="animate-spin w-8 h-8 text-blue-500 mr-2" />
-            <p className="text-gray-600">Loading videos...</p>
+            <p className="text-gray-600">Loading admin videos...</p>
           </div>
         ) : error ? (
           <div className="bg-red-50 text-red-500 p-4 rounded-lg flex items-center justify-center">
@@ -170,7 +157,7 @@ const VideosPage = () => {
                   <tr>
                     <th className="px-4 py-3 text-left">Creator</th>
                     <th className="px-4 py-3 text-left">Email</th>
-                    <th className="px-4 py-3 text-left">Reference</th>
+                    <th className="px-4 py-3 text-left">Date</th>
                     <th className="px-4 py-3 text-left">URL</th>
                     <th className="px-4 py-3 text-left">Actions</th>
                   </tr>
@@ -189,19 +176,11 @@ const VideosPage = () => {
                       <td className="px-4 py-3">
                         {video.email || "No Email"}
                       </td>
-                      <td className="px-4 py-3">
-                        {video.isAdmin ? (
-                          <span className="inline-block px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                            </svg>
-                            Admin: {video.employeeName !== "Admin" ? video.employeeName : ""}
-                          </span>
-                        ) : (
-                          <span className="inline-block px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs">
-                            {video.employeeName === "Unassigned" ? "Unassigned" : video.employeeName}
-                          </span>
-                        )}
+                      <td className="px-4 py-3 text-sm">
+                        {new Date(video.createdAt).toLocaleDateString()} 
+                        <span className="text-xs text-gray-500 ml-1">
+                          {new Date(video.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                        </span>
                       </td>
                       <td className="px-4 py-3">
                         <a
@@ -261,13 +240,22 @@ const VideosPage = () => {
             ) : (
               <div className="py-12 text-center text-gray-500">
                 <SlidersHorizontal className="w-12 h-12 mx-auto text-gray-400 mb-3" />
-                <p className="text-lg">No videos match your filters</p>
-                <button 
-                  onClick={resetFilters}
-                  className="mt-3 px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline focus:outline-none"
-                >
-                  Reset filters
-                </button>
+                {videos.length > 0 ? (
+                  <>
+                    <p className="text-lg">No videos match your search</p>
+                    <button 
+                      onClick={resetFilters}
+                      className="mt-3 px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline focus:outline-none"
+                    >
+                      Reset filters
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-lg">No admin videos available</p>
+                    <p className="text-sm mt-1">Videos submitted with your admin reference will appear here</p>
+                  </>
+                )}
               </div>
             )}
           </div>
@@ -277,4 +265,4 @@ const VideosPage = () => {
   );
 };
 
-export default VideosPage;
+export default AdminVideosPage; 

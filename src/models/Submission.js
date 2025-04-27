@@ -54,8 +54,9 @@ const notificationSchema = new mongoose.Schema(
   {
     creatorName: { type: String, required: true },
     employeeName: String,
+    isAdmin: { type: Boolean, default: false },
+    submissionId: { type: mongoose.Schema.Types.ObjectId, ref: 'Submission' },
     message: { type: String, required: true },
-    isRead: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

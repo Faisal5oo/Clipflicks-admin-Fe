@@ -30,6 +30,24 @@ export async function PUT(req, { params }) {
 
   try {
     const { name, email } = await req.json();
+    
+    // Validate inputs
+    if (!name || !email) {
+      return NextResponse.json(
+        { error: "Name and email are required" },
+        { status: 400 }
+      );
+    }
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { error: "Invalid email format" },
+        { status: 400 }
+      );
+    }
+    
     const employee = await Employee.findByIdAndUpdate(
       params.id,
       { name, email },
@@ -50,7 +68,7 @@ export async function PUT(req, { params }) {
   } catch (error) {
     console.error("Error updating employee:", error);
     return NextResponse.json(
-      { error: "Error updating employee" },
+      { error: "Error updating employee", details: error.message },
       { status: 500 }
     );
   }
