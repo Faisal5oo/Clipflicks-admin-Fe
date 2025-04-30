@@ -9,7 +9,7 @@ import {
   Calendar, Check, Download, FileVideo, XCircle, Instagram, 
   Youtube, Users, Info, Wifi, Copy, AlertTriangle, Share2, 
   Clock, FileText, Camera, CheckCircle, ChevronDown, ChevronUp, ExternalLink,
-  FileSignature, Shield, Flag
+  FileSignature, Shield, Flag, ShieldCheck
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-hot-toast";
@@ -33,6 +33,7 @@ const VideoDetails = () => {
     exclusivity: true,
     legal: true,
     signature: true,
+    notifications: true,
   });
   const [copied, setCopied] = useState(false);
 
@@ -172,30 +173,55 @@ const VideoDetails = () => {
               )}
               
               <div className="p-5">
-                <h1 className="text-2xl font-bold text-white mb-2">
-                  {video.title || "Untitled Video"}
-                </h1>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h1 className="text-2xl font-bold text-white mb-2">
+                      {video.title || "Untitled Video"}
+                    </h1>
+                    
+                    <div className="flex flex-wrap items-center gap-3 text-sm text-gray-400 mb-4">
+                      <span className="flex items-center bg-gray-800 px-3 py-1 rounded-full">
+                        <Calendar size={16} className="mr-1 text-blue-400" />
+                        {new Date(video.createdAt).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </span>
+                      
+                      <span className="flex items-center bg-gray-800 px-3 py-1 rounded-full">
+                        <User size={16} className="mr-1 text-blue-400" />
+                        {video.firstName} {video.lastName}
+                      </span>
+                      
+                      <span className="flex items-center bg-gray-800 px-3 py-1 rounded-full">
+                        <Globe size={16} className="mr-1 text-blue-400" />
+                        {video.country || "Unknown"}
+                      </span>
+                      
+                      <span className="flex items-center bg-gray-800 px-3 py-1 rounded-full">
+                        <Wifi size={16} className="mr-1 text-blue-400" />
+                        {video.userIp || "Unknown IP"}
+                      </span>
+                    </div>
+                  </div>
                 
-                <div className="flex flex-wrap items-center gap-3 text-sm text-gray-400 mb-4">
-                  <span className="flex items-center">
-                    <Calendar size={16} className="mr-1 text-gray-500" />
-                    {new Date(video.createdAt).toLocaleDateString()}
-                  </span>
-                  
-                  <span className="flex items-center">
-                    <User size={16} className="mr-1 text-gray-500" />
-                    {video.firstName} {video.lastName}
-                  </span>
-                  
-                  <span className="flex items-center">
-                    <Globe size={16} className="mr-1 text-gray-500" />
-                    {video.country || "Unknown"}
-                  </span>
-                  
-                  <span className="flex items-center">
-                    <Wifi size={16} className="mr-1 text-gray-500" />
-                    {video.userIp || "Unknown IP"}
-                  </span>
+                  {/* <div className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 px-3 py-2 rounded-lg border border-blue-800/50">
+                    <span className="text-xs text-blue-400 block mb-1">Submission Time</span>
+                    <span className="text-white font-medium flex items-center">
+                      <Clock className="h-4 w-4 mr-1 text-blue-400" />
+                      {new Date(video.createdAt).toLocaleString('en-US', {
+                        month: 'numeric', 
+                        day: 'numeric', 
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: true
+                      })}
+                    </span>
+                  </div> */}
                 </div>
                 
                 <div className="space-y-4">
@@ -212,7 +238,7 @@ const VideoDetails = () => {
                   {/* Video URLs */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <h3 className="text-sm font-medium text-gray-300 mb-1">Raw Video</h3>
+                      <h3 className="text-sm font-medium text-gray-300 mb-1">Raw Video URL</h3>
                       <div className="flex items-center">
                         <input
                           type="text"
@@ -230,7 +256,7 @@ const VideoDetails = () => {
                     </div>
                     
                     <div>
-                      <h3 className="text-sm font-medium text-gray-300 mb-1">Video URL</h3>
+                      <h3 className="text-sm font-medium text-gray-300 mb-1">External Video URL</h3>
                       <div className="flex items-center">
                         <input
                           type="text"
@@ -281,7 +307,7 @@ const VideoDetails = () => {
                         className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg flex items-center transition"
                       >
                         <ExternalLink size={16} className="mr-2" />
-                        Open Processed Video
+                        Open External Video Link
                       </a>
                     )}
                   </div>
@@ -316,12 +342,12 @@ const VideoDetails = () => {
                     className="overflow-hidden"
                   >
                     <div className="p-4 border-t border-gray-700">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-4">
-                          <div className="p-3 bg-gray-700/30 rounded-lg border border-gray-700">
+                          <div className="p-3 bg-gray-700/30 rounded-lg border border-gray-700 h-full">
                             <span className="block text-sm text-blue-400 mb-2 font-medium">User's Digital Signature</span>
                             {video.signature ? (
-                              <div className="border border-gray-700 rounded-lg p-2 bg-gray-600/30">
+                              <div className="border border-gray-700 rounded-lg p-2 bg-gray-100/90">
                                 <img 
                                   src={video.signature} 
                                   alt="User Signature" 
@@ -336,7 +362,7 @@ const VideoDetails = () => {
                             )}
                           </div>
                           
-                          <div className="p-3 bg-gray-700/30 rounded-lg border border-gray-700">
+                          <div className="p-3 bg-gray-700/30 rounded-lg border border-gray-700 h-full">
                             <span className="block text-sm text-blue-400 mb-2 font-medium">IP Address</span>
                             <div className="flex items-center">
                               <span className="font-medium text-gray-300 bg-gray-700 px-3 py-1 rounded flex items-center">
@@ -354,7 +380,7 @@ const VideoDetails = () => {
                         </div>
                         
                         <div className="space-y-4 text-gray-300">
-                          <div className="p-3 bg-gray-700/30 rounded-lg border border-gray-700">
+                          <div className="p-3 bg-gray-700/30 rounded-lg border border-gray-700 h-full">
                             <span className="block text-sm text-blue-400 mb-2 font-medium">Legal Agreements</span>
                             <div className="space-y-2">
                               <div className={`flex items-center ${
@@ -392,7 +418,7 @@ const VideoDetails = () => {
                             </div>
                           </div>
                           
-                          <div className="p-3 bg-gray-700/30 rounded-lg border border-gray-700">
+                          <div className="p-3 bg-gray-700/30 rounded-lg border border-gray-700 h-full">
                             <span className="block text-sm text-blue-400 mb-2 font-medium">Submission Date</span>
                             <span className="font-medium flex items-center">
                               <Calendar className="w-4 h-4 mr-1 text-blue-400" />
@@ -401,6 +427,156 @@ const VideoDetails = () => {
                           </div>
                         </div>
                       </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Email Notifications Section */}
+            <div className="bg-gray-800 rounded-xl shadow-lg overflow-hidden mt-6">
+              <button
+                onClick={() => toggleSection("notifications")}
+                className="w-full flex justify-between items-center p-4 text-left bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-600 hover:to-gray-700"
+              >
+                <h2 className="text-xl font-semibold text-white flex items-center">
+                  <Mail size={20} className="mr-2 text-blue-400" />
+                  Email Notifications
+                </h2>
+                {openSections.notifications ? (
+                  <ChevronUp size={20} className="text-gray-400" />
+                ) : (
+                  <ChevronDown size={20} className="text-gray-400" />
+                )}
+              </button>
+              
+              <AnimatePresence>
+                {openSections.notifications && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="p-4 border-t border-gray-700">
+                      {/* Admin Notification */}
+                      <div className="mb-4 p-3 bg-blue-900/20 rounded-lg border border-blue-900/40">
+                        <div className="flex items-center mb-2">
+                          <ShieldCheck className="w-5 h-5 text-blue-400 mr-2" />
+                          <h3 className="text-lg font-medium text-blue-400">Admin Notification</h3>
+                        </div>
+                        <div className="bg-gray-800/60 rounded-lg p-3 space-y-2">
+                          <p className="text-gray-300">
+                            <span className="text-blue-400 font-medium">To:</span> Clipsflickofficial@gmail.com
+                          </p>
+                          <p className="text-gray-300">
+                            <span className="text-blue-400 font-medium">Subject:</span> New Video Submission Received – ClipsFlick
+                          </p>
+                          <p className="text-gray-300">
+                            <span className="text-blue-400 font-medium">Sent:</span> {new Date(video.createdAt).toLocaleString()}
+                          </p>
+                          <p className="text-gray-300">
+                            <span className="text-blue-400 font-medium">Content:</span> Notification about new video submission
+                            from {video.firstName} {video.lastName} with submission details, video links, and legal agreements.
+                          </p>
+                          <div className="flex items-center text-blue-400 text-sm">
+                            <CheckCircle className="w-4 h-4 mr-1" />
+                            Email sent successfully
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Employee Notification */}
+                      {video.employee?.email ? (
+                        <div className="p-3 bg-green-900/20 rounded-lg border border-green-900/40">
+                          <div className="flex items-center mb-2">
+                            <User className="w-5 h-5 text-green-400 mr-2" />
+                            <h3 className="text-lg font-medium text-green-400">Employee Notification</h3>
+                          </div>
+                          <div className="bg-gray-800/60 rounded-lg p-3">
+                            <div className="border-b border-gray-700 pb-2 mb-3">
+                              <div className="flex justify-between items-center">
+                                <div className="flex items-center space-x-2">
+                                  <div className="w-8 h-8 bg-gradient-to-r from-green-600 to-green-500 rounded-full flex items-center justify-center">
+                                    <Mail className="w-4 h-4 text-white" />
+                                  </div>
+                                  <div>
+                                    <p className="text-white font-medium">ClipsFlick Notification System</p>
+                                    <p className="text-xs text-gray-400">notification@clipsflick.com</p>
+                                  </div>
+                                </div>
+                                <span className="text-xs bg-green-900/60 border border-green-800/60 text-green-400 px-2 py-1 rounded-full">
+                                  {new Date(video.createdAt).toLocaleDateString('en-US', {
+                                    month: 'short',
+                                    day: 'numeric',
+                                    year: 'numeric'
+                                  })}
+                                </span>
+                              </div>
+                            </div>
+                            
+                            <div className="space-y-3">
+                              <p className="text-gray-300">
+                                <span className="text-green-400 font-medium">To:</span> {video.employee.email}
+                              </p>
+                              <p className="text-gray-300">
+                                <span className="text-green-400 font-medium">Subject:</span> New Video Submission for Review – ClipsFlick
+                              </p>
+                              
+                              <div className="bg-gray-900/40 rounded-lg p-3 border border-gray-700 mt-3">
+                                <p className="text-sm text-white mb-3">Hello {video.employee.name},</p>
+                                <p className="text-sm text-gray-300 mb-3">
+                                  A new video has been submitted to the ClipsFlick platform that requires your attention.
+                                </p>
+                                
+                                <div className="bg-gray-800/80 rounded p-2 border-l-2 border-green-500 mb-3">
+                                  <p className="text-sm text-white">Submission Details:</p>
+                                  <ul className="text-sm text-gray-300 mt-1 space-y-1">
+                                    <li>• Creator: {video.firstName} {video.lastName}</li>
+                                    <li>• Country: {video.country || "Unspecified"}</li>
+                                    <li>• Submission Date: {new Date(video.createdAt).toLocaleString('en-US', {
+                                      month: 'short',
+                                      day: 'numeric',
+                                      year: 'numeric',
+                                      hour: '2-digit',
+                                      minute: '2-digit'
+                                    })}</li>
+                                  </ul>
+                                </div>
+                                
+                                <p className="text-sm text-gray-300">
+                                  Please log in to your ClipsFlick dashboard to review this submission at your earliest convenience.
+                                </p>
+                                
+                                <div className="mt-4 mb-2 text-center">
+                                  <div className="inline-block bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-2 rounded-md font-medium text-sm">
+                                    View Full Submission
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <div className="flex items-center justify-between mt-3 border-t border-gray-700 pt-3">
+                                <div className="flex items-center text-green-400 text-sm">
+                                  <CheckCircle className="w-4 h-4 mr-1" />
+                                  Email sent successfully
+                                </div>
+                                <span className="text-xs text-gray-500">
+                                  {new Date(video.createdAt).toLocaleString('en-US', {
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    second: '2-digit'
+                                  })}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="p-3 bg-gray-700/30 rounded-lg border border-gray-700 text-center">
+                          <p className="text-gray-400">No employee assigned. No employee notification was sent.</p>
+                        </div>
+                      )}
                     </div>
                   </motion.div>
                 )}
