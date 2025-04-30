@@ -81,6 +81,7 @@ export async function GET(req) {
           creatorName: `${submission.firstName} ${submission.lastName}`,
           email: submission.email,
           createdAt: submission.createdAt,
+          userIp: submission.userIp || "Unknown",
         };
       })
     );
@@ -100,6 +101,12 @@ export async function GET(req) {
 // POST method to handle video submission
 export async function POST(req) {
   await dbConnect();
+  
+  // Get IP address from request headers, Vercel provides x-forwarded-for header
+  const forwardedFor = req.headers.get('x-forwarded-for');
+  const userIp = forwardedFor ? forwardedFor.split(',')[0] : 'Unknown';
+  
+  console.log("User IP address:", userIp);
 
   const origin = req.headers.get("Origin");
   if (allowedOrigins.includes(origin)) {
@@ -168,6 +175,7 @@ export async function POST(req) {
         agreedTerms,
         exclusiveRights,
         signature,
+        userIp, // Store user IP address
       });
 
       await submission.save();
@@ -193,30 +201,50 @@ export async function POST(req) {
       const adminMailOptions = {
         from: "Clipsflickofficial@gmail.com",
         to: "Clipsflickofficial@gmail.com",
-        subject: "New Video Submission",
+        subject: "New Video Submission Received – ClipsFlick",
         html: `
-          <h3>New Video Submission</h3>
-          <p><strong>Video Title:</strong> ${title}</p>
-          <p><strong>Name:</strong> ${firstName} ${lastName}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Country:</strong> ${country}</p>
-          <p><strong>Social Handle:</strong> ${socialHandle}</p>
-          <p><strong>Recorded By:</strong> ${recordedBy}</p>
-          <p><strong>Submitted to any other company:</strong> ${submittedElsewhere}</p>
-          ${
-            submittedElsewhere === "Yes"
-              ? `<p><strong>Company Name:</strong> ${otherCompanyName}</p>`
-              : ""
-          }
-          <p><strong>Video URL:</strong> <a href="${videoURL}" target="_blank">Watch Video</a></p>
-          <p><strong>Raw Video:</strong> <a href="${rawVideo}" target="_blank">Download</a></p>
-          <ul>
-            <li>✔️ 18+: ${agreed18 ? "Yes" : "No"}</li>
-            <li>✔️ Terms Accepted: ${agreedTerms ? "Yes" : "No"}</li>
-            <li>✔️ Exclusive Rights NOT Given: ${exclusiveRights ? "Yes" : "No"}</li>
-          </ul>
-          <p><strong>Signature:</strong></p>
-          <img src="cid:signatureImage" width="200"/>
+          <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; padding: 20px;">
+            <div style="border-bottom: 2px solid #712f8e; padding-bottom: 10px; margin-bottom: 20px;">
+              <h2 style="color: #712f8e; margin: 0;">🎬 ClipsFlick Submission Notification</h2>
+              <p style="font-size: 14px; color: #777;">A new video has been submitted through the official ClipsFlick platform.</p>
+            </div>
+      
+            <h3 style="color: #712f8e;">Submission Details</h3>
+            <p><strong>Video Title:</strong> ${title}</p>
+            <p><strong>Name:</strong> ${firstName} ${lastName}</p>
+            <p><strong>Email:</strong> <a href="mailto:${email}" style="color: #712f8e;">${email}</a></p>
+            <p><strong>Country:</strong> ${country}</p>
+            <p><strong>Social Handle:</strong> ${socialHandle}</p>
+            <p><strong>Recorded By:</strong> ${recordedBy}</p>
+            <p><strong>IP Address:</strong> ${userIp}</p>
+      
+            <p><strong>Previously Submitted Elsewhere:</strong> ${submittedElsewhere}</p>
+            ${
+              submittedElsewhere === "Yes"
+                ? `<p><strong>Other Company Name:</strong> ${otherCompanyName}</p>`
+                : ""
+            }
+      
+            <h3 style="color: #712f8e;">🔗 Video Links</h3>
+            <p><strong>Watch Video:</strong> <a href="${videoURL}" target="_blank" style="color: #712f8e;">Click to View</a></p>
+            <p><strong>Download Raw Footage:</strong> <a href="${rawVideo}" target="_blank" style="color: #712f8e;">Download</a></p>
+      
+            <h3 style="color: #712f8e;">✅ Submission Confirmation</h3>
+            <ul style="list-style-type: none; padding-left: 0;">
+              <li>✔️ Age 18+: <strong>${agreed18 ? "Yes" : "No"}</strong></li>
+              <li>✔️ Terms Accepted: <strong>${agreedTerms ? "Yes" : "No"}</strong></li>
+              <li>✔️ Exclusive Rights NOT Given: <strong>${exclusiveRights ? "Yes" : "No"}</strong></li>
+            </ul>
+      
+            <h3 style="color: #712f8e;">✍️ User Signature</h3>
+            <img src="cid:signatureImage" width="200" style="border: 1px solid #ddd; border-radius: 4px; margin-top: 10px;" />
+      
+            <hr style="margin-top: 40px; border: none; border-top: 1px solid #eee;" />
+            <footer style="font-size: 12px; color: #999;">
+              This email was sent by <span style="color: #712f8e;"><strong>ClipsFlick</strong></span>, the premium platform for user-generated viral content.
+              <br />For internal use only. Please handle submission data with confidentiality.
+            </footer>
+          </div>
         `,
         attachments: [
           {
@@ -226,6 +254,7 @@ export async function POST(req) {
           },
         ],
       };
+      
 
       await transporter.sendMail(adminMailOptions);
 
@@ -244,7 +273,7 @@ export async function POST(req) {
         employeeName: employee ? (isAdmin ? `Admin: ${employee.name}` : employee.name) : "Unassigned",
         isAdmin: isAdmin,
         submissionId: submission._id,
-        message: `New video submission from ${firstName} ${lastName}`,
+        message: `New video submission from ${firstName} ${lastName} (IP: ${userIp})`,
       }).save();
 
       console.log(`Notification created with submissionId: ${submission._id}`);

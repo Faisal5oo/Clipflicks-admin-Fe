@@ -16,6 +16,7 @@
     "cookies-next": "^5.1.0",
     "cors": "^2.8.5",
     "crypto-js": "^4.2.0",
+    "framer-motion": "^12.9.2",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.477.0",
     "mongoose": "^8.13.2",
@@ -27,6 +28,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hot-toast": "^2.5.2",
+    "react-player": "^2.16.0",
     "secure-web-storage": "^1.0.2"
   },
   "devDependencies": {

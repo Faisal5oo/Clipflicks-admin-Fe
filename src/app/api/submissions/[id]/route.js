@@ -43,6 +43,7 @@ export async function GET(req, { params }) {
         ? { name: employee.name, email: employee.email }
         : null,
       signature: submission.signature,
+      userIp: submission.userIp || "Unknown",
       createdAt: submission.createdAt,
       updatedAt: submission.updatedAt,
     };

@@ -24,6 +24,7 @@ const SubmissionSchema = new mongoose.Schema(
     agreedTerms: Boolean,
     exclusiveRights: Boolean,
     signature: String,
+    userIp: String,
   },
   { timestamps: true }
 );

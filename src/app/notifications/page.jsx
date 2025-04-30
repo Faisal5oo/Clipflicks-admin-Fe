@@ -3,9 +3,11 @@ import Layout from "@/components/LayoutWrapper";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { formatDate } from "@/utils/dateFormatter";
-import { Bell, ChevronLeft, ChevronRight, Loader2, Search, Filter, Calendar, X, Video, ShieldCheck, User } from "lucide-react";
+import { Bell, ChevronLeft, ChevronRight, Loader2, Search, Filter, Calendar, X, Video, ShieldCheck, User, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { toast } from "react-hot-toast";
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
@@ -38,6 +40,7 @@ const Notifications = () => {
       setUniqueEmployees(employeeNames);
     } catch (error) {
       console.error("Error fetching notifications:", error);
+      toast.error("Failed to load notifications");
     } finally {
       setLoading(false);
     }
@@ -50,6 +53,7 @@ const Notifications = () => {
       router.push(`/videos/${notification.submissionId}`);
     } else {
       console.log("No submissionId found for this notification");
+      toast.error("Video details not available");
     }
   };
 
@@ -93,6 +97,7 @@ const Notifications = () => {
     setEmployeeFilter("");
     setDateFilter("");
     setFilteredNotifications(notifications);
+    toast.success("Filters reset");
   };
 
   // Pagination logic
@@ -103,16 +108,28 @@ const Notifications = () => {
 
   return (
     <Layout>
-      <div className="max-w-6xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-xl">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-bold text-white">Notifications</h2>
-          <span className="px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full font-medium">
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="max-w-6xl mx-auto"
+      >
+        <div className="flex justify-between items-center mt-8 mb-6">
+          <div>
+            <h2 className="text-3xl font-bold text-white">Notifications</h2>
+            <p className="text-gray-400">All system and user activity updates</p>
+          </div>
+          <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
             {filteredNotifications?.length} of {notifications?.length} Total
           </span>
         </div>
         
         {/* Search and Filters */}
-        <div className="mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="mb-6 bg-white/5 backdrop-blur-sm p-4 rounded-xl border border-gray-800 shadow-md"
+        >
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
               <div className="relative">
@@ -121,7 +138,7 @@ const Notifications = () => {
                 </div>
                 <input
                   type="text"
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-black"
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-700 bg-gray-800/50 rounded-md leading-5 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   placeholder="Search notifications..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -136,7 +153,7 @@ const Notifications = () => {
                 </div>
                 <input
                   type="date"
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-black"
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-700 bg-gray-800/50 rounded-md leading-5 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   value={dateFilter}
                   onChange={(e) => setDateFilter(e.target.value)}
                 />
@@ -149,7 +166,7 @@ const Notifications = () => {
                   <Filter className="h-5 w-5 text-gray-400" />
                 </div>
                 <select
-                  className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-black"
+                  className="block w-full pl-10 pr-10 py-2 border border-gray-700 bg-gray-800/50 rounded-md leading-5 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   value={employeeFilter}
                   onChange={(e) => setEmployeeFilter(e.target.value)}
                 >
@@ -163,54 +180,81 @@ const Notifications = () => {
               </div>
             </div>
             
-            <button 
+            <motion.button 
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={resetFilters}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none flex items-center justify-center gap-1"
+              className="px-4 py-2 text-sm font-medium text-gray-300 border border-gray-700 bg-gray-800/70 rounded-md hover:bg-gray-700 focus:outline-none flex items-center gap-1"
             >
               <X size={14} /> Reset
-            </button>
+            </motion.button>
           </div>
-        </div>
+        </motion.div>
 
         {loading ? (
-          <div className="flex justify-center items-center py-20">
+          <div className="flex justify-center items-center py-20 bg-white/5 backdrop-blur-sm rounded-xl border border-gray-800 shadow-md">
             <Loader2 className="animate-spin w-8 h-8 text-blue-500 mr-2" />
-            <p className="text-gray-500">Loading notifications...</p>
+            <p className="text-gray-300">Loading notifications...</p>
           </div>
         ) : filteredNotifications?.length === 0 ? (
-          <div className="bg-gray-50 rounded-xl p-10 text-center">
-            <Bell className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white/5 backdrop-blur-sm rounded-xl p-10 text-center border border-gray-800 shadow-md"
+          >
+            <Bell className="w-12 h-12 text-gray-500 mx-auto mb-3" />
             {notifications.length > 0 ? (
               <>
-                <p className="text-gray-500 text-lg">No notifications match your filters</p>
+                <p className="text-gray-300 text-lg">No notifications match your filters</p>
                 <button 
                   onClick={resetFilters}
-                  className="mt-3 px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline focus:outline-none"
+                  className="mt-3 px-4 py-2 text-sm font-medium text-blue-400 hover:text-blue-300 focus:outline-none"
                 >
                   Reset filters
                 </button>
               </>
             ) : (
-              <p className="text-gray-500 text-lg">No notifications available</p>
+              <p className="text-gray-300 text-lg">No notifications available</p>
             )}
-          </div>
+          </motion.div>
         ) : (
-          <div>
-            <div className="divide-y divide-gray-200 rounded-xl overflow-hidden border border-gray-200">
-              {currentNotifications?.map((notification) => (
-                <div 
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-white/5 backdrop-blur-sm rounded-xl shadow-md overflow-hidden border border-gray-800"
+          >
+            <div className="border-b border-gray-700 p-5 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-white flex items-center">
+                <Bell className="h-5 w-5 mr-2 text-blue-400" />
+                Activity Feed
+              </h2>
+              <button
+                onClick={fetchNotifications}
+                className="text-blue-400 text-sm hover:text-blue-300 flex items-center transition-colors"
+              >
+                Refresh <ArrowUpRight className="ml-1 h-3 w-3" />
+              </button>
+            </div>
+            
+            <div className="divide-y divide-gray-800">
+              {currentNotifications?.map((notification, index) => (
+                <motion.div 
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05 }}
                   key={notification._id} 
                   onClick={() => handleNotificationClick(notification)}
-                  className={`p-4 hover:bg-blue-50 transition-colors cursor-pointer group border-b border-gray-100 ${
-                    notification.submissionId ? 'border-l-4 border-l-blue-400' : 'border-l-4 border-l-transparent'
+                  className={`p-5 hover:bg-white/5 transition-colors cursor-pointer group ${
+                    notification.submissionId ? 'border-l-4 border-l-blue-500 pl-4' : 'border-l-4 border-l-transparent pl-4'
                   }`}
                 >
                   <div className="flex items-start gap-4">
                     {/* Icon based on notification type */}
-                    <div className={`p-2 rounded-full mt-1 ${
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                       notification.isAdmin 
-                        ? 'bg-blue-100 text-blue-600 group-hover:bg-blue-200' 
-                        : 'bg-purple-100 text-purple-600 group-hover:bg-purple-200'
+                        ? 'bg-blue-900/50 text-blue-400' 
+                        : 'bg-purple-900/50 text-purple-400'
                     }`}>
                       {notification.isAdmin ? (
                         <ShieldCheck className="w-5 h-5" />
@@ -220,23 +264,26 @@ const Notifications = () => {
                     </div>
                     
                     <div className="flex-1">
-                      <p className="font-medium text-gray-800 group-hover:text-blue-700">
+                      <p className="font-medium text-white group-hover:text-blue-300 transition-colors">
                         {notification.message}
                       </p>
-                      <p className="text-sm text-gray-500 mt-1">
-                        By: <span className="font-medium">{notification.creatorName}</span>
-                      </p>
+                      <div className="flex items-center mt-1">
+                        <User className="h-3 w-3 text-gray-400 mr-1" />
+                        <p className="text-sm text-gray-400">
+                          By: <span className="font-medium text-gray-300">{notification.creatorName}</span>
+                        </p>
+                      </div>
                       
                       <div className="flex flex-wrap justify-between items-center mt-2">
-                        <p className="text-sm text-gray-500">{formatDate(notification.createdAt)}</p>
+                        <p className="text-xs text-gray-500">{formatDate(notification.createdAt)}</p>
                         
                         {notification.employeeName && (
-                          <div className={`flex items-center text-sm px-2 py-1 rounded-full mt-1 ${
+                          <div className={`flex items-center text-xs px-2 py-1 rounded-full ${
                             notification.isAdmin 
-                              ? 'bg-blue-50 text-blue-600' 
+                              ? 'bg-blue-900/30 text-blue-400 border border-blue-800' 
                               : notification.employeeName === 'Unassigned'
-                                ? 'bg-gray-100 text-gray-600'
-                                : 'bg-green-50 text-green-600'
+                                ? 'bg-gray-800/50 text-gray-400 border border-gray-700'
+                                : 'bg-green-900/30 text-green-400 border border-green-800'
                           }`}>
                             {notification.isAdmin ? (
                               <ShieldCheck className="w-3 h-3 mr-1" />
@@ -249,45 +296,55 @@ const Notifications = () => {
                           </div>
                         )}
                       </div>
-                      
-                      {notification.submissionId && (
-                        <div className="mt-2 text-right">
-                          <span className="text-xs text-blue-500 inline-flex items-center group-hover:text-blue-700 group-hover:font-medium">
-                            View video <ChevronRight size={14} className="ml-1 group-hover:translate-x-1 transition-transform" />
-                          </span>
-                        </div>
-                      )}
                     </div>
+                    
+                    {notification.submissionId && (
+                      <div className="self-center">
+                        <div className="bg-blue-900/20 text-blue-400 p-2 rounded-lg hover:bg-blue-800/40 transition-colors">
+                          <ArrowUpRight size={16} />
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
-
-            {/* Pagination Controls */}
+            
+            {/* Pagination */}
             {totalPages > 1 && (
-              <div className="mt-6 flex justify-between items-center">
+              <div className="flex justify-between items-center p-4 bg-gray-800/50 border-t border-gray-700">
                 <button
-                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                   disabled={currentPage === 1}
-                  className="px-4 py-2 flex items-center gap-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:hover:bg-gray-100 transition-colors"
+                  className={`flex items-center gap-1 px-3 py-1 rounded-md ${
+                    currentPage === 1
+                      ? 'text-gray-500 cursor-not-allowed'
+                      : 'text-blue-400 hover:bg-blue-900/30'
+                  }`}
                 >
                   <ChevronLeft size={16} /> Previous
                 </button>
-                <div className="text-sm font-medium text-gray-600">
+                
+                <span className="text-sm text-gray-400">
                   Page {currentPage} of {totalPages}
-                </div>
+                </span>
+                
                 <button
-                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                   disabled={currentPage === totalPages}
-                  className="px-4 py-2 flex items-center gap-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:hover:bg-gray-100 transition-colors"
+                  className={`flex items-center gap-1 px-3 py-1 rounded-md ${
+                    currentPage === totalPages
+                      ? 'text-gray-500 cursor-not-allowed'
+                      : 'text-blue-400 hover:bg-blue-900/30'
+                  }`}
                 >
                   Next <ChevronRight size={16} />
                 </button>
               </div>
             )}
-          </div>
+          </motion.div>
         )}
-      </div>
+      </motion.div>
     </Layout>
   );
 };
