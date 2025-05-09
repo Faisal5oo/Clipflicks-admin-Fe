@@ -213,6 +213,7 @@ export async function POST(req) {
       
             <h3 style="color: #712f8e;">Submission Details</h3>
             <p><strong>Video Title:</strong> ${title}</p>
+            <p><strong>Description:</strong> ${description}</p>
             <p><strong>Name:</strong> ${firstName} ${lastName}</p>
             <p><strong>Email:</strong> <a href="mailto:${email}" style="color: #712f8e;">${email}</a></p>
             <p><strong>Country:</strong> ${country}</p>
