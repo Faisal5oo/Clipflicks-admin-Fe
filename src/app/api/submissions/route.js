@@ -115,6 +115,7 @@ export async function POST(req) {
         empRef,
         videoURL,
         title,
+        description,
         firstName,
         lastName,
         socialHandle,
@@ -159,6 +160,7 @@ export async function POST(req) {
         empRef,
         admin: isAdmin, // Set admin flag based on whether empRef is an admin
         title,
+        description,
         videoURL,
         firstName,
         lastName,
