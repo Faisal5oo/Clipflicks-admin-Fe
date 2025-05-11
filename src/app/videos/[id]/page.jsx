@@ -745,7 +745,7 @@ const VideoDetails = () => {
                     <div className="p-4 border-t border-gray-700">
                       <div className="space-y-4 text-gray-300">
                         <div className="p-3 bg-gray-700/30 rounded-lg border border-gray-700">
-                          <span className="block text-sm text-blue-400 mb-2 font-medium">Submitted elsewhere</span>
+                          <span className="block text-sm text-blue-400 mb-2 font-medium">Submitted to another company</span>
                           <span className={`inline-flex items-center ${
                             video.submittedElsewhere === "Yes" ? "text-yellow-400" : "text-green-400"
                           }`}>
@@ -764,7 +764,7 @@ const VideoDetails = () => {
                           </div>
                         )}
                         
-                        <div className="p-3 bg-gray-700/30 rounded-lg border border-gray-700">
+                        {/* <div className="p-3 bg-gray-700/30 rounded-lg border border-gray-700">
                           <span className="block text-sm text-blue-400 mb-2 font-medium">Not uploaded elsewhere</span>
                           <span className={`inline-flex items-center ${
                             video.notUploadedElsewhere ? "text-green-400" : "text-yellow-400"
@@ -775,7 +775,7 @@ const VideoDetails = () => {
                               <><XCircle size={16} className="mr-1" /> Content may be uploaded elsewhere</>
                             )}
                           </span>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </motion.div>

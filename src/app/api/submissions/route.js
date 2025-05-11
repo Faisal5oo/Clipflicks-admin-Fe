@@ -78,6 +78,7 @@ export async function GET(req) {
           employeeEmail: refEmail,
           isAdmin,
           videoURL: submission.videoURL,
+          description: submission.description,
           creatorName: `${submission.firstName} ${submission.lastName}`,
           email: submission.email,
           createdAt: submission.createdAt,
@@ -213,15 +214,20 @@ export async function POST(req) {
       
             <h3 style="color: #712f8e;">Submission Details</h3>
             <p><strong>Video Title:</strong> ${title}</p>
-            <p><strong>Description:</strong> ${description}</p>
+            <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 10px 0;">
+              <p style="margin: 0;"><strong>Description:</strong></p>
+              <p style="margin: 10px 0 0 0; white-space: pre-wrap; line-height: 1.5;">${description}</p>
+            </div>
             <p><strong>Name:</strong> ${firstName} ${lastName}</p>
-            <p><strong>Email:</strong> <a href="mailto:${email}" style="color: #712f8e;">${email}</a></p>
+            <div style="background-color: #f8f9fa; padding: 10px; border-radius: 8px; margin: 10px 0; word-break: break-all;">
+              <p style="margin: 0;"><strong>Email:</strong> <a href="mailto:${email}" style="color: #712f8e;">${email}</a></p>
+            </div>
             <p><strong>Country:</strong> ${country}</p>
             <p><strong>Social Handle:</strong> ${socialHandle}</p>
             <p><strong>Recorded By:</strong> ${recordedBy}</p>
             <p><strong>IP Address:</strong> ${userIp}</p>
       
-            <p><strong>Previously Submitted Elsewhere:</strong> ${submittedElsewhere}</p>
+            <p><strong>Content Upload Status:</strong> ${submittedElsewhere === "Yes" ? "Content has been uploaded to another company" : "Content has not been uploaded to any other company"}</p>
             ${
               submittedElsewhere === "Yes"
                 ? `<p><strong>Other Company Name:</strong> ${otherCompanyName}</p>`
@@ -234,9 +240,9 @@ export async function POST(req) {
       
             <h3 style="color: #712f8e;">✅ Submission Confirmation</h3>
             <ul style="list-style-type: none; padding-left: 0;">
-              <li>✔️ Age 18+: <strong>${agreed18 ? "Yes" : "No"}</strong></li>
-              <li>✔️ Terms Accepted: <strong>${agreedTerms ? "Yes" : "No"}</strong></li>
-              <li>✔️ Exclusive Rights NOT Given: <strong>${exclusiveRights ? "Yes" : "No"}</strong></li>
+              <li>I verify that I am at least 18 years old: <strong>${agreed18 ? "Yes" : "No"}</strong></li>
+              <li>I acknowledge and consent to the Terms of Submission and Privacy Agreement: <strong>${agreedTerms ? "Yes I agree" : "No I do not agree"}</strong></li>
+              <li>I have not given exclusive rights to this video to anyone: <strong>${exclusiveRights ? "Yes" : "No"}</strong></li>
             </ul>
       
             <h3 style="color: #712f8e;">✍️ User Signature</h3>
