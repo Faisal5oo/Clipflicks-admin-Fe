@@ -206,66 +206,70 @@ export async function POST(req) {
         to: "Clipsflickofficial@gmail.com",
         subject: "New Video Submission Received – ClipsFlick",
         html: `
-          <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; padding: 20px;">
-            <div style="border-bottom: 2px solid #712f8e; padding-bottom: 10px; margin-bottom: 20px;">
-              <h2 style="color: #712f8e; margin: 0;">ClipsFlick Submission Notification</h2>
-              <p style="font-size: 14px; color: #777;">A new video has been submitted through the official ClipsFlick platform.</p>
-            </div>
-      
-            <h3 style="color: #712f8e;">Submission Details</h3>
-            <p><strong>Video Title:</strong> ${title}</p>
-            <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 10px 0;">
-              <p style="margin: 0;"><strong>Video Description:</strong></p>
-              <p style="margin: 10px 0 0 0; white-space: pre-wrap; line-height: 1.5;">${description}</p>
-            </div>
-            <p><strong>Creator Name:</strong> ${firstName} ${lastName}</p>
-            <div style="background-color: #f8f9fa; padding: 10px; border-radius: 8px; margin: 10px 0; word-break: break-all;">
-              <p style="margin: 0;"><strong>Creator Email:</strong> <a href="mailto:${email}" style="color: #712f8e;">${email}</a></p>
-            </div>
-            <p><strong>Country:</strong> ${country}</p>
-            <p><strong>Social Handle:</strong> ${socialHandle}</p>
-            <p><strong>Recorded By:</strong> ${recordedBy}</p>
-            <p><strong>IP Address:</strong> ${userIp}</p>
-      
-            <p><strong>Content Upload Status:</strong> ${submittedElsewhere === "Yes" ? "Content has been uploaded to another company" : "Content has not been uploaded to any other company"}</p>
-            ${submittedElsewhere === "Yes"
-            ? `<p><strong>Other Company Name:</strong> ${otherCompanyName}</p>`
-            : ""
-          }
-      
-            <h3 style="color: #712f8e;">🔗 Video Links</h3>
-            <p><strong>Video URL :</strong> <a href="${videoURL}" target="_blank" style="color: #712f8e;">Click to View</a></p>
-            <p><strong>Download Raw Footage:</strong> <a href="${rawVideo}" target="_blank" style="color: #712f8e;">Download</a></p>
-      
-         <h3 style="color: #712f8e; margin-top: 30px; margin-bottom: 10px;">✅ Submission Confirmation</h3>
-<ul style="list-style-type: none; padding-left: 0; margin: 0;">
-  <li style="margin-bottom: 15px;">
-    I verify that I am at least 18 years old:
-    <br />
-    <strong>${agreed18 ? "Yes" : "No"}</strong>
-  </li>
-  <li style="margin-bottom: 15px;">
-    I acknowledge and consent to the Terms of Submission and Privacy Agreement:
-    <br />
-    <strong>${agreedTerms ? "Yes I agree" : "No I do not agree"}</strong>
-  </li>
-  <li style="margin-bottom: 15px;">
-    I have not given exclusive rights to this video to anyone:
-    <br />
-    <strong>${exclusiveRights ? "Yes" : "No"}</strong>
-  </li>
-</ul>
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; padding: 32px; background-color: #ffffff;">
+      <div style="border-bottom: 2px solid #712f8e; padding-bottom: 16px; margin-bottom: 32px;">
+        <h2 style="color: #712f8e; margin: 0;">ClipsFlick Submission Notification</h2>
+        <p style="font-size: 14px; color: #666; margin-top: 4px;">A new video has been submitted through the official ClipsFlick platform.</p>
+      </div>
 
-      
-            <h3 style="color: #712f8e;">✍️ User Signature</h3>
-            <img src="cid:signatureImage" width="200" style="border: 1px solid #ddd; border-radius: 4px; margin-top: 10px;" />
-      
-            <hr style="margin-top: 40px; border: none; border-top: 1px solid #eee;" />
-            <footer style="font-size: 12px; color: #999;">
-              This email was sent by <span style="color: #712f8e;"><strong>ClipsFlick</strong></span>, the premium platform for user-generated viral content.
-              <br />For internal use only. Please handle submission data with confidentiality.
-            </footer>
-          </div>
+      <h3 style="color: #712f8e; margin-bottom: 12px;">Submission Details</h3>
+      <p style="margin: 6px 0;"><strong>Video Title:</strong> ${title}</p>
+      <div style="background-color: #f5f5f5; padding: 16px; border-radius: 8px; margin: 12px 0;">
+        <p style="margin: 0; font-weight: 600;">Video Description:</p>
+        <p style="margin: 8px 0 0; white-space: pre-wrap; line-height: 1.6;">${description}</p>
+      </div>
+
+      <p style="margin: 6px 0;"><strong>Creator Name:</strong> ${firstName} ${lastName}</p>
+      <p style="margin: 6px 0;"><strong>Country:</strong> ${country}</p>
+      <p style="margin: 6px 0;"><strong>Social Handle:</strong> ${socialHandle}</p>
+      <p style="margin: 6px 0;"><strong>Recorded By:</strong> ${recordedBy}</p>
+      <p style="margin: 6px 0;"><strong>IP Address:</strong> ${userIp}</p>
+
+      <div style="background-color: #f0f0f0; padding: 12px 16px; border-radius: 8px; margin: 16px 0;">
+        <p style="margin: 0;"><strong>Creator Email:</strong> 
+          <a href="mailto:${email}" style="color: #712f8e; text-decoration: none;">${email}</a>
+        </p>
+      </div>
+
+      <p style="margin: 20px 0 8px;"><strong>Upload Status:</strong> 
+        ${submittedElsewhere === "Yes" ? "Uploaded to another company" : "Not uploaded elsewhere"}
+      </p>
+      ${submittedElsewhere === "Yes"
+        ? `<p style="margin: 6px 0;"><strong>Other Company Name:</strong> ${otherCompanyName}</p>`
+        : ""
+      }
+
+      <h3 style="color: #712f8e; margin: 32px 0 16px;">Video Links</h3>
+      <p style="margin: 6px 0;"><strong>Video URL:</strong> <a href="${videoURL}" target="_blank" style="color: #712f8e;">Click Here</a></p>
+      <p style="margin: 6px 0;"><strong>Download Raw Footage:</strong> <a href="${rawVideo}" target="_blank" style="color: #712f8e;">Download</a></p>
+
+      <h3 style="color: #712f8e; margin: 32px 0 16px;">Legal Confirmation</h3>
+      <ul style="list-style: none; padding-left: 0; margin: 0;">
+        <li style="margin-bottom: 16px;">
+          I verify that I am at least 18 years old:<br />
+          <strong>${agreed18 ? "Yes" : "No"}</strong>
+        </li>
+        <li style="margin-bottom: 16px;">
+          I consent to the Terms of Submission and Privacy Agreement:<br />
+          <strong>${agreedTerms ? "Yes, I agree" : "No, I do not agree"}</strong>
+        </li>
+        <li style="margin-bottom: 16px;">
+          I have not given exclusive rights to this video:<br />
+          <strong>${exclusiveRights ? "Yes" : "No"}</strong>
+        </li>
+      </ul>
+
+      <h3 style="color: #712f8e; margin: 32px 0 16px;">User Signature</h3>
+      <img src="cid:signatureImage" width="240" style="border: 1px solid #ccc; border-radius: 6px; margin-top: 10px;" />
+
+      <hr style="margin: 40px 0; border: none; border-top: 1px solid #ddd;" />
+
+      <footer style="font-size: 12px; color: #999; line-height: 1.5;">
+        This email was sent by <span style="color: #712f8e;"><strong>ClipsFlick</strong></span>, the premium platform for user-generated viral content.
+        <br />
+        <em>Internal Use Only – Handle Submission Data Confidentially.</em>
+      </footer>
+    </div>
         `,
         attachments: [
           {
