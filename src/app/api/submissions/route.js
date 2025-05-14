@@ -243,7 +243,7 @@ export async function POST(req) {
           <strong>${agreed18 ? "Yes ✅" : "No ❌"}</strong>
         </li>
         <li style="margin: 6px 0;">
-          I consent to the Terms of Submission and Privacy Agreement:<br />
+        I acknowledge and consent to the Terms of Submission and Privacy Agreement:<br />
           <strong>${agreedTerms ? "Yes, I agree ✅" : "No, I do not agree ❌"}</strong>
         </li>
         <li style="margin: 6px 0;">
