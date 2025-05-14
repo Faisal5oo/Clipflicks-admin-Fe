@@ -214,48 +214,41 @@ export async function POST(req) {
 
       <h3 style="color: #712f8e; margin-bottom: 12px;">Submission Details</h3>
       <p style="margin: 6px 0;"><strong>Video Title:</strong> ${title}</p>
-      <div style="background-color: #f5f5f5; padding: 16px; border-radius: 8px; margin: 12px 0;">
-        <p style="margin: 0; font-weight: 600;">Video Description:</p>
-        <p style="margin: 8px 0 0; white-space: pre-wrap; line-height: 1.6;">${description}</p>
-      </div>
-
-      <p style="margin: 6px 0;"><strong>Creator Name:</strong> ${firstName} ${lastName}</p>
+        <p style="margin: 6px 0;"><strong>Description:</strong></p>
+        <p style="margin: 6px 0; white-space: pre-wrap; line-height: 1.6;">${description}</p>
+      <p style="margin: 6px 0;"><strong>Name:</strong> ${firstName} ${lastName}</p>
+      <p style="margin: 6px 0;"><strong>Email:</strong>  <a href="mailto:${email}" style="color: #712f8e; text-decoration: none;">${email}</a></p>
       <p style="margin: 6px 0;"><strong>Country:</strong> ${country}</p>
       <p style="margin: 6px 0;"><strong>Social Handle:</strong> ${socialHandle}</p>
-      <p style="margin: 6px 0;"><strong>Recorded By:</strong> ${recordedBy}</p>
       <p style="margin: 6px 0;"><strong>IP Address:</strong> ${userIp}</p>
-
-      <div style="background-color: #f0f0f0; padding: 12px 16px; border-radius: 8px; margin: 16px 0;">
-        <p style="margin: 0;"><strong>Creator Email:</strong> 
-          <a href="mailto:${email}" style="color: #712f8e; text-decoration: none;">${email}</a>
-        </p>
-      </div>
-
-      <p style="margin: 20px 0 8px;"><strong>Upload Status:</strong> 
-        ${submittedElsewhere === "Yes" ? "Uploaded to another company" : "Not uploaded to any other company"}
+      <p style="margin: 6px 0;"><strong>Who is recorded this video?</strong></p>
+      <p style="margin: 6px 0;">${recordedBy}</p>
+      <p style="margin: 20px 0 8px;"><strong>Did you submit this video to another company?</strong> 
+        ${submittedElsewhere === "Yes" ? "Yes" : "No"}
       </p>
       ${submittedElsewhere === "Yes"
         ? `<p style="margin: 6px 0;"><strong>Other Company Name:</strong> ${otherCompanyName}</p>`
         : ""
       }
 
-      <h3 style="color: #712f8e; margin: 32px 0 16px;">Video Links</h3>
-      <p style="margin: 6px 0;"><strong>Video URL:</strong> <a href="${videoURL}" target="_blank" style="color: #712f8e;">Click Here</a></p>
+      <h3 style="color: #712f8e; margin: 6px 0">🔗 Video Links
+</h3>
+      <p style="margin: 6px 0;"><strong>Watch Video:</strong> <a href="${videoURL}" target="_blank" style="color: #712f8e;">Click Here</a></p>
       <p style="margin: 6px 0;"><strong>Download Raw Footage:</strong> <a href="${rawVideo}" target="_blank" style="color: #712f8e;">Download</a></p>
 
-      <h3 style="color: #712f8e; margin: 32px 0 16px;">Legal Confirmation</h3>
+      <h3 style="color: #712f8e; margin: 32px 0 16px;">✅ Submission Confirmation</h3>
       <ul style="list-style: none; padding-left: 0; margin: 0;">
-        <li style="margin-bottom: 16px;">
+        <li style="margin: 6px 0;">
           I verify that I am at least 18 years old:<br />
-          <strong>${agreed18 ? "Yes" : "No"}</strong>
+          <strong>${agreed18 ? "Yes ✅" : "No ❌"}</strong>
         </li>
-        <li style="margin-bottom: 16px;">
+        <li style="margin: 6px 0;">
           I consent to the Terms of Submission and Privacy Agreement:<br />
-          <strong>${agreedTerms ? "Yes, I agree" : "No, I do not agree"}</strong>
+          <strong>${agreedTerms ? "Yes, I agree ✅" : "No, I do not agree ❌"}</strong>
         </li>
-        <li style="margin-bottom: 16px;">
+        <li style="margin: 6px 0;">
           I have not given exclusive rights to this video:<br />
-          <strong>${exclusiveRights ? "Yes" : "No"}</strong>
+          <strong>${exclusiveRights ? "Yes ✅" : "No ❌"}</strong>
         </li>
       </ul>
 
