@@ -232,7 +232,7 @@ export async function POST(req) {
       </div>
 
       <p style="margin: 20px 0 8px;"><strong>Upload Status:</strong> 
-        ${submittedElsewhere === "Yes" ? "Uploaded to another company" : "Not uploaded elsewhere"}
+        ${submittedElsewhere === "Yes" ? "Uploaded to another company" : "Not uploaded to any other company"}
       </p>
       ${submittedElsewhere === "Yes"
         ? `<p style="margin: 6px 0;"><strong>Other Company Name:</strong> ${otherCompanyName}</p>`
