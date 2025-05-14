@@ -44,7 +44,7 @@ export async function GET(req) {
         let refName = "Unassigned";
         let refEmail = "";
         let isAdmin = false;
-        
+
         if (submission.empRef) {
           // First check if it's an admin reference
           if (submission.admin) {
@@ -71,7 +71,7 @@ export async function GET(req) {
             }
           }
         }
-        
+
         return {
           id: submission._id,
           employeeName: refName,
@@ -102,11 +102,11 @@ export async function GET(req) {
 // POST method to handle video submission
 export async function POST(req) {
   await dbConnect();
-  
+
   // Get IP address from request headers, Vercel provides x-forwarded-for header
   const forwardedFor = req.headers.get('x-forwarded-for');
   const userIp = forwardedFor ? forwardedFor.split(',')[0] : 'Unknown';
-  
+
   console.log("User IP address:", userIp);
 
   const origin = req.headers.get("Origin");
@@ -138,7 +138,7 @@ export async function POST(req) {
       let isAdmin = false;
       let employee = null;
       let refName = "Unassigned";
-      
+
       if (empRef) {
         // First check if empRef exists in Admin collection
         const admin = await Admin.findById(empRef);
@@ -208,19 +208,19 @@ export async function POST(req) {
         html: `
           <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; padding: 20px;">
             <div style="border-bottom: 2px solid #712f8e; padding-bottom: 10px; margin-bottom: 20px;">
-              <h2 style="color: #712f8e; margin: 0;">🎬 ClipsFlick Submission Notification</h2>
+              <h2 style="color: #712f8e; margin: 0;">ClipsFlick Submission Notification</h2>
               <p style="font-size: 14px; color: #777;">A new video has been submitted through the official ClipsFlick platform.</p>
             </div>
       
             <h3 style="color: #712f8e;">Submission Details</h3>
             <p><strong>Video Title:</strong> ${title}</p>
             <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 10px 0;">
-              <p style="margin: 0;"><strong>Description:</strong></p>
+              <p style="margin: 0;"><strong>Video Description:</strong></p>
               <p style="margin: 10px 0 0 0; white-space: pre-wrap; line-height: 1.5;">${description}</p>
             </div>
-            <p><strong>Name:</strong> ${firstName} ${lastName}</p>
+            <p><strong>Creator Name:</strong> ${firstName} ${lastName}</p>
             <div style="background-color: #f8f9fa; padding: 10px; border-radius: 8px; margin: 10px 0; word-break: break-all;">
-              <p style="margin: 0;"><strong>Email:</strong> <a href="mailto:${email}" style="color: #712f8e;">${email}</a></p>
+              <p style="margin: 0;"><strong>Creator Email:</strong> <a href="mailto:${email}" style="color: #712f8e;">${email}</a></p>
             </div>
             <p><strong>Country:</strong> ${country}</p>
             <p><strong>Social Handle:</strong> ${socialHandle}</p>
@@ -228,22 +228,34 @@ export async function POST(req) {
             <p><strong>IP Address:</strong> ${userIp}</p>
       
             <p><strong>Content Upload Status:</strong> ${submittedElsewhere === "Yes" ? "Content has been uploaded to another company" : "Content has not been uploaded to any other company"}</p>
-            ${
-              submittedElsewhere === "Yes"
-                ? `<p><strong>Other Company Name:</strong> ${otherCompanyName}</p>`
-                : ""
-            }
+            ${submittedElsewhere === "Yes"
+            ? `<p><strong>Other Company Name:</strong> ${otherCompanyName}</p>`
+            : ""
+          }
       
             <h3 style="color: #712f8e;">🔗 Video Links</h3>
-            <p><strong>Watch Video:</strong> <a href="${videoURL}" target="_blank" style="color: #712f8e;">Click to View</a></p>
+            <p><strong>Video URL :</strong> <a href="${videoURL}" target="_blank" style="color: #712f8e;">Click to View</a></p>
             <p><strong>Download Raw Footage:</strong> <a href="${rawVideo}" target="_blank" style="color: #712f8e;">Download</a></p>
       
-            <h3 style="color: #712f8e;">✅ Submission Confirmation</h3>
-            <ul style="list-style-type: none; padding-left: 0;">
-              <li>I verify that I am at least 18 years old: <strong>${agreed18 ? "Yes" : "No"}</strong></li>
-              <li>I acknowledge and consent to the Terms of Submission and Privacy Agreement: <strong>${agreedTerms ? "Yes I agree" : "No I do not agree"}</strong></li>
-              <li>I have not given exclusive rights to this video to anyone: <strong>${exclusiveRights ? "Yes" : "No"}</strong></li>
-            </ul>
+         <h3 style="color: #712f8e; margin-top: 30px; margin-bottom: 10px;">✅ Submission Confirmation</h3>
+<ul style="list-style-type: none; padding-left: 0; margin: 0;">
+  <li style="margin-bottom: 15px;">
+    I verify that I am at least 18 years old:
+    <br />
+    <strong>${agreed18 ? "Yes" : "No"}</strong>
+  </li>
+  <li style="margin-bottom: 15px;">
+    I acknowledge and consent to the Terms of Submission and Privacy Agreement:
+    <br />
+    <strong>${agreedTerms ? "Yes I agree" : "No I do not agree"}</strong>
+  </li>
+  <li style="margin-bottom: 15px;">
+    I have not given exclusive rights to this video to anyone:
+    <br />
+    <strong>${exclusiveRights ? "Yes" : "No"}</strong>
+  </li>
+</ul>
+
       
             <h3 style="color: #712f8e;">✍️ User Signature</h3>
             <img src="cid:signatureImage" width="200" style="border: 1px solid #ddd; border-radius: 4px; margin-top: 10px;" />
@@ -263,7 +275,7 @@ export async function POST(req) {
           },
         ],
       };
-      
+
 
       await transporter.sendMail(adminMailOptions);
 
