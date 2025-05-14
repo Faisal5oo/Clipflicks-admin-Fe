@@ -223,20 +223,20 @@ export async function POST(req) {
       <p style="margin: 6px 0;"><strong>IP Address:</strong> ${userIp}</p>
       <p style="margin: 6px 0;"><strong>Who is recorded this video?</strong></p>
       <p style="margin: 6px 0;">${recordedBy}</p>
-      <p style="margin: 20px 0 8px;"><strong>Did you submit this video to another company?</strong> 
+      <p style="margin: 6px 0 8px;"><strong>Did you submit this video to another company?</strong><br />
         ${submittedElsewhere === "Yes" ? "Yes" : "No"}
       </p>
       ${submittedElsewhere === "Yes"
-        ? `<p style="margin: 6px 0;"><strong>Other Company Name:</strong> ${otherCompanyName}</p>`
-        : ""
-      }
+            ? `<p style="margin: 6px 0;"><strong>Other Company Name:</strong><br /> ${otherCompanyName}</p>`
+            : ""
+          }
 
       <h3 style="color: #712f8e; margin: 6px 0">🔗 Video Links
 </h3>
       <p style="margin: 6px 0;"><strong>Watch Video:</strong> <a href="${videoURL}" target="_blank" style="color: #712f8e;">Click Here</a></p>
       <p style="margin: 6px 0;"><strong>Download Raw Footage:</strong> <a href="${rawVideo}" target="_blank" style="color: #712f8e;">Download</a></p>
 
-      <h3 style="color: #712f8e; margin: 32px 0 16px;">✅ Submission Confirmation</h3>
+      <h3 style="color: #712f8e; margin: 6px 0;">✅ Submission Confirmation</h3>
       <ul style="list-style: none; padding-left: 0; margin: 0;">
         <li style="margin: 6px 0;">
           I verify that I am at least 18 years old:<br />
@@ -247,7 +247,7 @@ export async function POST(req) {
           <strong>${agreedTerms ? "Yes, I agree ✅" : "No, I do not agree ❌"}</strong>
         </li>
         <li style="margin: 6px 0;">
-          I have not given exclusive rights to this video:<br />
+          I have not given exclusive rights to this video to anyone:<br />
           <strong>${exclusiveRights ? "Yes ✅" : "No ❌"}</strong>
         </li>
       </ul>
