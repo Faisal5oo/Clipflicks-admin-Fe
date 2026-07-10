@@ -9,6 +9,7 @@ import path from "path";
 const allowedOrigins = [
   "https://clipsflick.com",
   "https://www.clipsflick.com",
+  "https://clipflicks-website.vercel.app",
   "http://localhost:3000",
   "http://localhost:3001",
   "http://127.0.0.1:3000",
